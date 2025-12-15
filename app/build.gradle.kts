@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.lineupapp"
+    namespace = "com.gundogar.lineupapp"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.lineupapp"
+        applicationId = "com.gundogar.lineupapp"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
