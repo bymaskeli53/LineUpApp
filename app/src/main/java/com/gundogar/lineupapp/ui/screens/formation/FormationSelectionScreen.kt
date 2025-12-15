@@ -17,10 +17,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Face
+//import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +49,7 @@ import com.gundogar.lineupapp.ui.theme.SecondaryGold
 @Composable
 fun FormationSelectionScreen(
     onFormationSelected: (String) -> Unit,
+    onViewSavedLineups: () -> Unit,
     viewModel: FormationSelectionViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -60,9 +66,18 @@ fun FormationSelectionScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
+                actions = {
+                    IconButton(onClick = onViewSavedLineups) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.List,
+                            contentDescription = "My Lineups",
+                            tint = SecondaryGold
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = GrassGreenDark,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = Color.White
                 )
             )
         },
@@ -135,7 +150,8 @@ fun FormationSelectionScreen(
 private fun FormationSelectionScreenPreview() {
     LineUpAppTheme {
         FormationSelectionScreen(
-            onFormationSelected = {}
+            onFormationSelected = {},
+            onViewSavedLineups = {}
         )
     }
 }

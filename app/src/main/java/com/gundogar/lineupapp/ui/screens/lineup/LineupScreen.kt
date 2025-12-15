@@ -17,14 +17,13 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.CheckCircle
-//import androidx.compose.material.icons.filled.Palette
-//import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,7 +70,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun LineupScreen(
     formationId: String,
+    savedLineupId: Long? = null,
     onNavigateBack: () -> Unit,
+    onLineupSaved: () -> Unit = {},
     viewModel: LineupViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -81,8 +82,12 @@ fun LineupScreen(
     val graphicsLayer = rememberGraphicsLayer()
     var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    LaunchedEffect(formationId) {
-        viewModel.loadFormation(formationId)
+    LaunchedEffect(formationId, savedLineupId) {
+        if (savedLineupId != null) {
+            viewModel.loadSavedLineup(savedLineupId)
+        } else {
+            viewModel.loadFormation(formationId)
+        }
     }
 
     Scaffold(
@@ -113,133 +118,153 @@ fun LineupScreen(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(GrassGreenDark, GrassGreen, GrassGreenDark)
-                    )
-                )
-        ) {
-            // Pitch with players
+        if (state.isLoading) {
             Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-                        drawLayer(graphicsLayer)
-                    },
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                BoxWithConstraints(
-                    modifier = Modifier.fillMaxSize(),
+                CircularProgressIndicator(color = SecondaryGold)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(GrassGreenDark, GrassGreen, GrassGreenDark)
+                        )
+                    )
+            ) {
+                // Pitch with players
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .drawWithContent {
+                            graphicsLayer.record {
+                                this@drawWithContent.drawContent()
+                            }
+                            drawLayer(graphicsLayer)
+                        },
                     contentAlignment = Alignment.Center
                 ) {
-                    val pitchWidth = maxWidth
-                    val pitchHeight = pitchWidth / 0.65f
-
-                    Box(
-                        modifier = Modifier
-                            .width(pitchWidth)
-                            .height(if (pitchHeight > maxHeight) maxHeight else pitchHeight)
+                    BoxWithConstraints(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        // Draw the pitch
-                        FootballPitch(
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        val pitchWidth = maxWidth
+                        val pitchHeight = pitchWidth / 0.65f
 
-                        // Position players on the pitch
-                        state.formation?.positions?.forEach { position ->
-                            val player = state.players[position.id]
-
-                            BoxWithConstraints(
+                        Box(
+                            modifier = Modifier
+                                .width(pitchWidth)
+                                .height(if (pitchHeight > maxHeight) maxHeight else pitchHeight)
+                        ) {
+                            // Draw the pitch
+                            FootballPitch(
                                 modifier = Modifier.fillMaxSize()
-                            ) {
-                                val xOffset = (position.xPercent * maxWidth.value - 24).dp
-                                val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
+                            )
 
-                                PlayerJersey(
-                                    position = position,
-                                    player = player,
-                                    teamConfig = state.teamConfig,
-                                    onClick = { viewModel.onPlayerClick(position) },
-                                    modifier = Modifier.offset {
-                                        IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
-                                    }
-                                )
+                            // Position players on the pitch
+                            state.formation?.positions?.forEach { position ->
+                                val player = state.players[position.id]
+
+                                BoxWithConstraints(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    val xOffset = (position.xPercent * maxWidth.value - 24).dp
+                                    val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
+
+                                    PlayerJersey(
+                                        position = position,
+                                        player = player,
+                                        teamConfig = state.teamConfig,
+                                        onClick = { viewModel.onPlayerClick(position) },
+                                        modifier = Modifier.offset {
+                                            IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // Bottom action bar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(GrassGreenDark.copy(alpha = 0.9f))
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    onClick = { viewModel.showCustomizationSheet() },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = SecondaryGold,
-                        contentColor = GrassGreenDark
-                    )
+                // Bottom action bar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(GrassGreenDark.copy(alpha = 0.9f))
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.AccountBox,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Customize", fontWeight = FontWeight.Bold)
-                }
+                    Button(
+                        onClick = { viewModel.showCustomizationSheet() },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = SecondaryGold,
+                            contentColor = GrassGreenDark
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Customize", fontWeight = FontWeight.Bold)
+                    }
 
-                Button(
-                    onClick = {
-                        scope.launch {
-                            val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                            ShareUtil.saveLineupImage(context, bitmap, state.teamConfig.teamName)
+                    Button(
+                        onClick = {
+                            viewModel.saveLineupToDatabase(onSuccess = onLineupSaved)
+                        },
+                        enabled = !state.isSaving,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = GrassGreenDark
+                        )
+                    ) {
+                        if (state.isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.height(20.dp).width(20.dp),
+                                strokeWidth = 2.dp,
+                                color = GrassGreenDark
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null
+                            )
                         }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = GrassGreenDark
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Save", fontWeight = FontWeight.Bold)
-                }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (state.savedLineupId != null) "Update" else "Save",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
 
-                Button(
-                    onClick = {
-                        scope.launch {
-                            val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                            ShareUtil.shareLineupImage(context, bitmap, state.teamConfig.teamName)
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Share", fontWeight = FontWeight.Bold)
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                ShareUtil.shareLineupImage(context, bitmap, state.teamConfig.teamName)
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Share", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }

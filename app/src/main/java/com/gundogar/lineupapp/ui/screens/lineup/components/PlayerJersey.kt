@@ -69,7 +69,7 @@ fun PlayerJersey(
         Text(
             text = player?.name?.takeIf { it.isNotBlank() } ?: "Tap to add",
             color = Color.White,
-            fontSize = 9.sp,
+            fontSize = 12.sp,
             fontWeight = if (player?.name?.isNotBlank() == true) FontWeight.Medium else FontWeight.Normal,
             textAlign = TextAlign.Center,
             maxLines = 1,
