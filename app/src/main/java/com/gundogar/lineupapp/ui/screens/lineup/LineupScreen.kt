@@ -276,9 +276,10 @@ fun LineupScreen(
                 position = state.selectedPosition!!,
                 currentName = currentPlayer?.name ?: "",
                 currentNumber = currentPlayer?.number,
+                currentRating = currentPlayer?.rating,
                 onDismiss = { viewModel.onPlayerDialogDismiss() },
-                onConfirm = { name, number ->
-                    viewModel.onPlayerSave(name, number)
+                onConfirm = { name, number, rating ->
+                    viewModel.onPlayerSave(name, number, rating)
                 }
             )
         }

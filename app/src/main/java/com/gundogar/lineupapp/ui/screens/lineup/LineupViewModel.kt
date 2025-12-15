@@ -82,13 +82,14 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun onPlayerSave(name: String, number: Int?) {
+    fun onPlayerSave(name: String, number: Int?, rating: Double?) {
         val position = _state.value.selectedPosition ?: return
 
         val player = Player(
             positionId = position.id,
             name = name,
-            number = number
+            number = number,
+            rating = rating
         )
 
         _state.update { currentState ->

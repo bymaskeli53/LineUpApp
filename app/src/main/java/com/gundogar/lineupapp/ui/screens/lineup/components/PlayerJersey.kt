@@ -2,19 +2,24 @@ package com.gundogar.lineupapp.ui.screens.lineup.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -58,13 +63,37 @@ fun PlayerJersey(
             .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        JerseyIcon(
-            primaryColor = teamConfig.primaryColor,
-            secondaryColor = teamConfig.secondaryColor,
-            style = teamConfig.jerseyStyle,
-            number = player?.number,
-            modifier = Modifier.size(44.dp)
-        )
+        // Jersey with rating badge
+        Box {
+            JerseyIcon(
+                primaryColor = teamConfig.primaryColor,
+                secondaryColor = teamConfig.secondaryColor,
+                style = teamConfig.jerseyStyle,
+                number = player?.number,
+                modifier = Modifier.size(44.dp)
+            )
+
+            // Rating badge - positioned at top-right of jersey
+            player?.rating?.let { rating ->
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 8.dp, y = (-4).dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(getRatingColor(rating))
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = formatRating(rating),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
 
         Text(
             text = player?.name?.takeIf { it.isNotBlank() } ?: "Tap to add",
@@ -87,7 +116,7 @@ private fun PlayerJerseyPreview() {
     LineUpAppTheme {
         PlayerJersey(
             position = Position(10, PositionRole.FORWARD, 0.5f, 0.75f),
-            player = Player(10, "Messi", 10),
+            player = Player(10, "Messi", 10, 9.3),
             teamConfig = TeamConfig(),
             onClick = {}
         )
