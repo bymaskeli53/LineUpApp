@@ -18,16 +18,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,10 +53,14 @@ fun DraggablePlayerJersey(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
     var isDragging by remember { mutableStateOf(false) }
     var dragOffsetX by remember { mutableFloatStateOf(0f) }
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
+
+    // Use rememberUpdatedState to always get the latest values in callbacks
+    val currentPosition by rememberUpdatedState(position)
+    val currentPitchWidthPx by rememberUpdatedState(pitchWidthPx)
+    val currentPitchHeightPx by rememberUpdatedState(pitchHeightPx)
 
     val scale by animateFloatAsState(
         targetValue = if (isDragging) 1.15f else 1f,
@@ -66,7 +69,6 @@ fun DraggablePlayerJersey(
     )
 
     val jerseySize = 44.dp
-    val jerseySizePx = with(density) { jerseySize.toPx() }
 
     Column(
         modifier = modifier
@@ -87,15 +89,13 @@ fun DraggablePlayerJersey(
                     onDragEnd = {
                         isDragging = false
 
-                        // Calculate current position in pixels
-                        val currentXPx = position.xPercent * pitchWidthPx + dragOffsetX
-                        val currentYPx = (1f - position.yPercent) * pitchHeightPx + dragOffsetY
+                        // Use the updated state values to calculate new position
+                        val newXPercent = (currentPosition.xPercent + dragOffsetX / currentPitchWidthPx)
+                            .coerceIn(0.08f, 0.92f)
+                        val newYPercent = (currentPosition.yPercent - dragOffsetY / currentPitchHeightPx)
+                            .coerceIn(0.05f, 0.92f)
 
-                        // Convert back to percentages
-                        val newXPercent = (currentXPx / pitchWidthPx).coerceIn(0.08f, 0.92f)
-                        val newYPercent = (1f - (currentYPx / pitchHeightPx)).coerceIn(0.05f, 0.92f)
-
-                        onPositionDrag(position.id, newXPercent, newYPercent)
+                        onPositionDrag(currentPosition.id, newXPercent, newYPercent)
 
                         // Reset offset after position is updated
                         dragOffsetX = 0f
