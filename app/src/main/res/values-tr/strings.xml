@@ -88,4 +88,19 @@
     <string name="share_failed">Resim paylaşılamadı</string>
     <string name="save_success">Kadro galeriye kaydedildi</string>
     <string name="save_failed">Resim kaydedilemedi</string>
+
+    <!-- Drawing -->
+    <string name="drawing_mode">Çizim Modu</string>
+    <string name="tool_pen">Kalem</string>
+    <string name="tool_arrow">Ok</string>
+    <string name="tool_line">Çizgi</string>
+    <string name="tool_circle">Daire</string>
+    <string name="tool_eraser">Silgi</string>
+    <string name="drawing_undo">Geri Al</string>
+    <string name="drawing_redo">Yinele</string>
+    <string name="drawing_clear">Tümünü Temizle</string>
+    <string name="drawing_clear_confirm">Tüm çizimler silinsin mi?</string>
+    <string name="stroke_thin">İnce</string>
+    <string name="stroke_medium">Orta</string>
+    <string name="stroke_thick">Kalın</string>
 </resources>

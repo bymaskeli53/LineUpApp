@@ -1,9 +1,13 @@
 package com.gundogar.lineupapp.ui.screens.lineup
 
 import android.app.Application
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gundogar.lineupapp.data.local.LineupDatabase
+import com.gundogar.lineupapp.data.model.DrawingState
+import com.gundogar.lineupapp.data.model.DrawingStroke
+import com.gundogar.lineupapp.data.model.DrawingTool
 import com.gundogar.lineupapp.data.model.Formation
 import com.gundogar.lineupapp.data.model.Player
 import com.gundogar.lineupapp.data.model.Position
@@ -29,7 +33,8 @@ data class LineupScreenState(
     val isSaving: Boolean = false,
     val savedLineupId: Long? = null,
     val isLoading: Boolean = false,
-    val saveSuccess: Boolean = false
+    val saveSuccess: Boolean = false,
+    val drawingState: DrawingState = DrawingState()
 ) {
     val effectivePositions: List<Position>
         get() = customPositions ?: formation?.positions ?: emptyList()
@@ -109,7 +114,8 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
                         playerCount = savedLineup.playerCount,
                         teamConfig = savedLineup.teamConfig,
                         savedLineupId = lineupId,
-                        isLoading = false
+                        isLoading = false,
+                        drawingState = it.drawingState.copy(strokes = savedLineup.drawingStrokes)
                     )
                 }
             } else {
@@ -194,6 +200,7 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
                     customPositions = if (currentState.isCustomizable) currentState.customPositions else null,
                     playerCount = currentState.playerCount,
                     teamConfig = currentState.teamConfig,
+                    drawingStrokes = currentState.drawingState.strokes,
                     existingId = currentState.savedLineupId
                 )
 
@@ -214,5 +221,116 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
 
     fun getPlayerForPosition(positionId: Int): Player? {
         return _state.value.players[positionId]
+    }
+
+    // Drawing methods
+    fun toggleDrawingMode() {
+        _state.update { currentState ->
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(
+                    isDrawingMode = !currentState.drawingState.isDrawingMode
+                )
+            )
+        }
+    }
+
+    fun exitDrawingMode() {
+        _state.update { currentState ->
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(isDrawingMode = false)
+            )
+        }
+    }
+
+    fun setDrawingTool(tool: DrawingTool) {
+        _state.update { currentState ->
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(currentTool = tool)
+            )
+        }
+    }
+
+    fun setDrawingColor(color: Color) {
+        _state.update { currentState ->
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(currentColor = color)
+            )
+        }
+    }
+
+    fun setStrokeWidth(width: Float) {
+        _state.update { currentState ->
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(currentStrokeWidth = width)
+            )
+        }
+    }
+
+    fun addStroke(stroke: DrawingStroke) {
+        _state.update { currentState ->
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(
+                    strokes = currentState.drawingState.strokes + stroke,
+                    undoStack = emptyList() // Clear redo stack when new stroke is added
+                )
+            )
+        }
+    }
+
+    fun eraseStroke(strokeId: String) {
+        _state.update { currentState ->
+            val strokeToRemove = currentState.drawingState.strokes.find { it.id == strokeId }
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(
+                    strokes = currentState.drawingState.strokes.filter { it.id != strokeId },
+                    undoStack = if (strokeToRemove != null) {
+                        currentState.drawingState.undoStack + strokeToRemove
+                    } else {
+                        currentState.drawingState.undoStack
+                    }
+                )
+            )
+        }
+    }
+
+    fun undo() {
+        _state.update { currentState ->
+            val strokes = currentState.drawingState.strokes
+            if (strokes.isEmpty()) return@update currentState
+
+            val lastStroke = strokes.last()
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(
+                    strokes = strokes.dropLast(1),
+                    undoStack = currentState.drawingState.undoStack + lastStroke
+                )
+            )
+        }
+    }
+
+    fun redo() {
+        _state.update { currentState ->
+            val undoStack = currentState.drawingState.undoStack
+            if (undoStack.isEmpty()) return@update currentState
+
+            val strokeToRestore = undoStack.last()
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(
+                    strokes = currentState.drawingState.strokes + strokeToRestore,
+                    undoStack = undoStack.dropLast(1)
+                )
+            )
+        }
+    }
+
+    fun clearAllDrawings() {
+        _state.update { currentState ->
+            currentState.copy(
+                drawingState = currentState.drawingState.copy(
+                    strokes = emptyList(),
+                    undoStack = currentState.drawingState.strokes // Allow undo of clear
+                )
+            )
+        }
     }
 }

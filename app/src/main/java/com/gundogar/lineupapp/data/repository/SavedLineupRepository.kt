@@ -4,9 +4,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.gundogar.lineupapp.data.local.dao.SavedLineupDao
 import com.gundogar.lineupapp.data.local.entity.SavedLineupEntity
+import com.gundogar.lineupapp.data.model.DrawingStroke
 import com.gundogar.lineupapp.data.model.JerseyStyle
 import com.gundogar.lineupapp.data.model.Player
 import com.gundogar.lineupapp.data.model.Position
+import com.gundogar.lineupapp.data.model.SerializableDrawingStroke
 import com.gundogar.lineupapp.data.model.TeamConfig
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -22,6 +24,7 @@ data class SavedLineup(
     val customPositions: List<Position>? = null,
     val playerCount: Int = 11,
     val teamConfig: TeamConfig,
+    val drawingStrokes: List<DrawingStroke> = emptyList(),
     val createdAt: Long,
     val updatedAt: Long
 )
@@ -48,8 +51,17 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
         customPositions: List<Position>? = null,
         playerCount: Int = 11,
         teamConfig: TeamConfig,
+        drawingStrokes: List<DrawingStroke> = emptyList(),
         existingId: Long? = null
     ): Long {
+        // Serialize drawing strokes to JSON using serializable version
+        val drawingStrokesJson = if (drawingStrokes.isNotEmpty()) {
+            val serializableStrokes = drawingStrokes.map { SerializableDrawingStroke.fromDrawingStroke(it) }
+            gson.toJson(serializableStrokes)
+        } else {
+            null
+        }
+
         val entity = SavedLineupEntity(
             id = existingId ?: 0,
             teamName = teamName,
@@ -61,6 +73,7 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
             primaryColor = teamConfig.primaryColor.toArgb().toLong(),
             secondaryColor = teamConfig.secondaryColor.toArgb().toLong(),
             jerseyStyle = teamConfig.jerseyStyle.name,
+            drawingStrokesJson = drawingStrokesJson,
             createdAt = if (existingId != null) {
                 dao.getLineupById(existingId)?.createdAt ?: System.currentTimeMillis()
             } else {
@@ -92,6 +105,17 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
             }
         }
 
+        // Deserialize drawing strokes
+        val strokesType = object : TypeToken<List<SerializableDrawingStroke>>() {}.type
+        val drawingStrokes: List<DrawingStroke> = drawingStrokesJson?.let { json ->
+            try {
+                val serializableStrokes: List<SerializableDrawingStroke> = gson.fromJson(json, strokesType)
+                serializableStrokes.map { it.toDrawingStroke() }
+            } catch (e: Exception) {
+                emptyList()
+            }
+        } ?: emptyList()
+
         val teamConfig = TeamConfig(
             teamName = teamName,
             primaryColor = Color(primaryColor.toInt()),
@@ -112,6 +136,7 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
             customPositions = customPositions,
             playerCount = playerCount,
             teamConfig = teamConfig,
+            drawingStrokes = drawingStrokes,
             createdAt = createdAt,
             updatedAt = updatedAt
         )

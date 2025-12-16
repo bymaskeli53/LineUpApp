@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
@@ -60,6 +61,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.customization.TeamCustomizationSheet
 import com.gundogar.lineupapp.ui.screens.lineup.components.DraggablePlayerJersey
+import com.gundogar.lineupapp.ui.screens.lineup.components.DrawingOverlay
+import com.gundogar.lineupapp.ui.screens.lineup.components.DrawingToolbar
 import com.gundogar.lineupapp.ui.screens.lineup.components.FootballPitch
 import com.gundogar.lineupapp.ui.screens.lineup.components.PlayerJersey
 import com.gundogar.lineupapp.ui.screens.lineup.components.PlayerNameDialog
@@ -174,39 +177,76 @@ fun LineupScreen(
                                 modifier = Modifier.fillMaxSize()
                             )
 
-                            // Position players on the pitch
-                            BoxWithConstraints(
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                val pitchWidthPx = maxWidth.value * LocalDensity.current.density
-                                val pitchHeightPx = maxHeight.value * LocalDensity.current.density
+                            // Drawing overlay (between pitch and players)
+                            if (state.drawingState.strokes.isNotEmpty() || state.drawingState.isDrawingMode) {
+                                DrawingOverlay(
+                                    strokes = state.drawingState.strokes,
+                                    isDrawingMode = state.drawingState.isDrawingMode,
+                                    currentTool = state.drawingState.currentTool,
+                                    currentColor = state.drawingState.currentColor,
+                                    currentStrokeWidth = state.drawingState.currentStrokeWidth,
+                                    onStrokeComplete = { stroke -> viewModel.addStroke(stroke) },
+                                    onEraseStroke = { strokeId -> viewModel.eraseStroke(strokeId) },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
 
-                                state.effectivePositions.forEach { position ->
-                                    val player = state.players[position.id]
-                                    val xOffset = (position.xPercent * maxWidth.value - 24).dp
-                                    val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
+                            // Position players on the pitch (only interactive when not in drawing mode)
+                            if (!state.drawingState.isDrawingMode) {
+                                BoxWithConstraints(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    val pitchWidthPx = maxWidth.value * LocalDensity.current.density
+                                    val pitchHeightPx = maxHeight.value * LocalDensity.current.density
 
-                                    if (state.isCustomizable) {
-                                        DraggablePlayerJersey(
-                                            position = position,
-                                            player = player,
-                                            teamConfig = state.teamConfig,
-                                            pitchWidthPx = pitchWidthPx,
-                                            pitchHeightPx = pitchHeightPx,
-                                            onPositionDrag = { positionId, newXPercent, newYPercent ->
-                                                viewModel.updatePositionCoordinates(positionId, newXPercent, newYPercent)
-                                            },
-                                            onClick = { viewModel.onPlayerClick(position) },
-                                            modifier = Modifier.offset {
-                                                IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
-                                            }
-                                        )
-                                    } else {
+                                    state.effectivePositions.forEach { position ->
+                                        val player = state.players[position.id]
+                                        val xOffset = (position.xPercent * maxWidth.value - 24).dp
+                                        val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
+
+                                        if (state.isCustomizable) {
+                                            DraggablePlayerJersey(
+                                                position = position,
+                                                player = player,
+                                                teamConfig = state.teamConfig,
+                                                pitchWidthPx = pitchWidthPx,
+                                                pitchHeightPx = pitchHeightPx,
+                                                onPositionDrag = { positionId, newXPercent, newYPercent ->
+                                                    viewModel.updatePositionCoordinates(positionId, newXPercent, newYPercent)
+                                                },
+                                                onClick = { viewModel.onPlayerClick(position) },
+                                                modifier = Modifier.offset {
+                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                                }
+                                            )
+                                        } else {
+                                            PlayerJersey(
+                                                position = position,
+                                                player = player,
+                                                teamConfig = state.teamConfig,
+                                                onClick = { viewModel.onPlayerClick(position) },
+                                                modifier = Modifier.offset {
+                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Show players as non-interactive in drawing mode
+                                BoxWithConstraints(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    state.effectivePositions.forEach { position ->
+                                        val player = state.players[position.id]
+                                        val xOffset = (position.xPercent * maxWidth.value - 24).dp
+                                        val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
+
                                         PlayerJersey(
                                             position = position,
                                             player = player,
                                             teamConfig = state.teamConfig,
-                                            onClick = { viewModel.onPlayerClick(position) },
+                                            onClick = { /* Disabled in drawing mode */ },
                                             modifier = Modifier.offset {
                                                 IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
                                             }
@@ -216,78 +256,113 @@ fun LineupScreen(
                             }
                         }
                     }
+
+                    // Drawing toolbar (when in drawing mode)
+                    if (state.drawingState.isDrawingMode) {
+                        DrawingToolbar(
+                            currentTool = state.drawingState.currentTool,
+                            currentColor = state.drawingState.currentColor,
+                            currentStrokeWidth = state.drawingState.currentStrokeWidth,
+                            canUndo = state.drawingState.strokes.isNotEmpty(),
+                            canRedo = state.drawingState.undoStack.isNotEmpty(),
+                            onToolSelected = { tool -> viewModel.setDrawingTool(tool) },
+                            onColorSelected = { color -> viewModel.setDrawingColor(color) },
+                            onStrokeWidthChanged = { width -> viewModel.setStrokeWidth(width) },
+                            onUndo = { viewModel.undo() },
+                            onRedo = { viewModel.redo() },
+                            onClear = { viewModel.clearAllDrawings() },
+                            onClose = { viewModel.exitDrawingMode() },
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
                 }
 
-                // Bottom action bar
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(GrassGreenDark.copy(alpha = 0.9f))
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = { viewModel.showCustomizationSheet() },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = SecondaryGold,
-                            contentColor = GrassGreenDark
-                        )
+                // Bottom action bar (hidden in drawing mode)
+                if (!state.drawingState.isDrawingMode) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(GrassGreenDark.copy(alpha = 0.9f))
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.btn_customize), fontWeight = FontWeight.Bold)
-                    }
-
-                    Button(
-                        onClick = {
-                            viewModel.saveLineupToDatabase(onSuccess = onLineupSaved)
-                        },
-                        enabled = !state.isSaving,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = GrassGreenDark
-                        )
-                    ) {
-                        if (state.isSaving) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.height(20.dp).width(20.dp),
-                                strokeWidth = 2.dp,
-                                color = GrassGreenDark
+                        // Drawing mode button
+                        Button(
+                            onClick = { viewModel.toggleDrawingMode() },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White.copy(alpha = 0.9f),
+                                contentColor = GrassGreenDark
                             )
-                        } else {
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null
+                                imageVector = Icons.Default.Create,
+                                contentDescription = stringResource(R.string.drawing_mode)
                             )
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(if (state.savedLineupId != null) R.string.btn_update else R.string.btn_save),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
 
-                    Button(
-                        onClick = {
-                            scope.launch {
-                                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                                ShareUtil.shareLineupImage(context, bitmap, state.teamConfig.teamName)
+                        Button(
+                            onClick = { viewModel.showCustomizationSheet() },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SecondaryGold,
+                                contentColor = GrassGreenDark
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.btn_customize), fontWeight = FontWeight.Bold)
+                        }
+
+                        Button(
+                            onClick = {
+                                viewModel.saveLineupToDatabase(onSuccess = onLineupSaved)
+                            },
+                            enabled = !state.isSaving,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = GrassGreenDark
+                            )
+                        ) {
+                            if (state.isSaving) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.height(20.dp).width(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = GrassGreenDark
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null
+                                )
                             }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.btn_share), fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(if (state.savedLineupId != null) R.string.btn_update else R.string.btn_save),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                    ShareUtil.shareLineupImage(context, bitmap, state.teamConfig.teamName)
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.btn_share), fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }

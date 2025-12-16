@@ -16,6 +16,7 @@ data class SavedLineupEntity(
     val primaryColor: Long,
     val secondaryColor: Long,
     val jerseyStyle: String,
+    val drawingStrokesJson: String? = null, // Serialized drawing strokes for tactics
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )
