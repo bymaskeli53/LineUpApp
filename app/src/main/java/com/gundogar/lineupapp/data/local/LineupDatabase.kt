@@ -9,7 +9,7 @@ import com.gundogar.lineupapp.data.local.entity.SavedLineupEntity
 
 @Database(
     entities = [SavedLineupEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class LineupDatabase : RoomDatabase() {
@@ -26,7 +26,9 @@ abstract class LineupDatabase : RoomDatabase() {
                     context.applicationContext,
                     LineupDatabase::class.java,
                     "lineup_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

@@ -19,6 +19,9 @@ import kotlinx.coroutines.launch
 data class LineupScreenState(
     val formation: Formation? = null,
     val players: Map<Int, Player> = emptyMap(),
+    val customPositions: List<Position>? = null,
+    val isCustomizable: Boolean = false,
+    val playerCount: Int = 11,
     val teamConfig: TeamConfig = TeamConfig(),
     val selectedPosition: Position? = null,
     val showPlayerDialog: Boolean = false,
@@ -27,7 +30,10 @@ data class LineupScreenState(
     val savedLineupId: Long? = null,
     val isLoading: Boolean = false,
     val saveSuccess: Boolean = false
-)
+) {
+    val effectivePositions: List<Position>
+        get() = customPositions ?: formation?.positions ?: emptyList()
+}
 
 class LineupViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -39,7 +45,42 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
 
     fun loadFormation(formationId: String) {
         val formation = FormationRepository.getFormationById(formationId)
-        _state.update { it.copy(formation = formation) }
+        _state.update {
+            it.copy(
+                formation = formation,
+                isCustomizable = formation?.isCustomizable ?: false,
+                playerCount = formation?.playerCount ?: 11,
+                customPositions = if (formation?.isCustomizable == true) formation.positions else null
+            )
+        }
+    }
+
+    fun loadCustomLayout(playerCount: Int) {
+        val layout = FormationRepository.getDefaultCustomLayout(playerCount)
+        _state.update {
+            it.copy(
+                formation = layout,
+                customPositions = layout.positions,
+                isCustomizable = true,
+                playerCount = playerCount
+            )
+        }
+    }
+
+    fun updatePositionCoordinates(positionId: Int, newXPercent: Float, newYPercent: Float) {
+        _state.update { currentState ->
+            val updatedPositions = currentState.customPositions?.map { position ->
+                if (position.id == positionId) {
+                    position.copy(
+                        xPercent = newXPercent.coerceIn(0.05f, 0.95f),
+                        yPercent = newYPercent.coerceIn(0.05f, 0.95f)
+                    )
+                } else {
+                    position
+                }
+            }
+            currentState.copy(customPositions = updatedPositions)
+        }
     }
 
     fun loadSavedLineup(lineupId: Long) {
@@ -48,11 +89,24 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
 
             val savedLineup = repository.getLineupById(lineupId)
             if (savedLineup != null) {
-                val formation = FormationRepository.getFormationById(savedLineup.formationId)
+                val isCustomizable = savedLineup.playerCount in 5..10
+                val formation = if (isCustomizable) {
+                    FormationRepository.getDefaultCustomLayout(savedLineup.playerCount).let { defaultLayout ->
+                        defaultLayout.copy(
+                            positions = savedLineup.customPositions ?: defaultLayout.positions
+                        )
+                    }
+                } else {
+                    FormationRepository.getFormationById(savedLineup.formationId)
+                }
+
                 _state.update {
                     it.copy(
                         formation = formation,
                         players = savedLineup.players,
+                        customPositions = savedLineup.customPositions,
+                        isCustomizable = isCustomizable,
+                        playerCount = savedLineup.playerCount,
                         teamConfig = savedLineup.teamConfig,
                         savedLineupId = lineupId,
                         isLoading = false
@@ -137,6 +191,8 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
                     formationId = formation.id,
                     formationName = formation.name,
                     players = currentState.players,
+                    customPositions = if (currentState.isCustomizable) currentState.customPositions else null,
+                    playerCount = currentState.playerCount,
                     teamConfig = currentState.teamConfig,
                     existingId = currentState.savedLineupId
                 )

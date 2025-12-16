@@ -6,6 +6,7 @@ import com.gundogar.lineupapp.data.local.dao.SavedLineupDao
 import com.gundogar.lineupapp.data.local.entity.SavedLineupEntity
 import com.gundogar.lineupapp.data.model.JerseyStyle
 import com.gundogar.lineupapp.data.model.Player
+import com.gundogar.lineupapp.data.model.Position
 import com.gundogar.lineupapp.data.model.TeamConfig
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -18,6 +19,8 @@ data class SavedLineup(
     val formationId: String,
     val formationName: String,
     val players: Map<Int, Player>,
+    val customPositions: List<Position>? = null,
+    val playerCount: Int = 11,
     val teamConfig: TeamConfig,
     val createdAt: Long,
     val updatedAt: Long
@@ -42,6 +45,8 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
         formationId: String,
         formationName: String,
         players: Map<Int, Player>,
+        customPositions: List<Position>? = null,
+        playerCount: Int = 11,
         teamConfig: TeamConfig,
         existingId: Long? = null
     ): Long {
@@ -51,6 +56,8 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
             formationId = formationId,
             formationName = formationName,
             playersJson = gson.toJson(players),
+            positionsJson = customPositions?.let { gson.toJson(it) },
+            playerCount = playerCount,
             primaryColor = teamConfig.primaryColor.toArgb().toLong(),
             secondaryColor = teamConfig.secondaryColor.toArgb().toLong(),
             jerseyStyle = teamConfig.jerseyStyle.name,
@@ -76,6 +83,15 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
             emptyMap()
         }
 
+        val positionsType = object : TypeToken<List<Position>>() {}.type
+        val customPositions: List<Position>? = positionsJson?.let {
+            try {
+                gson.fromJson(it, positionsType)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
         val teamConfig = TeamConfig(
             teamName = teamName,
             primaryColor = Color(primaryColor.toInt()),
@@ -93,6 +109,8 @@ class SavedLineupRepository(private val dao: SavedLineupDao) {
             formationId = formationId,
             formationName = formationName,
             players = players,
+            customPositions = customPositions,
+            playerCount = playerCount,
             teamConfig = teamConfig,
             createdAt = createdAt,
             updatedAt = updatedAt

@@ -5,7 +5,8 @@ data class Formation(
     val name: String,
     val displayName: String,
     val positions: List<Position>,
-    val playerCount: Int = 11
+    val playerCount: Int = 11,
+    val isCustomizable: Boolean = false // true for 5-10 player custom layouts
 )
 
 enum class FormationType(val id: String, val displayName: String) {

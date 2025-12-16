@@ -18,7 +18,97 @@ object FormationRepository {
 
     fun getAllFormations(): List<Formation> = formations
 
-    fun getFormationById(id: String): Formation? = formations.find { it.id == id }
+    fun getFormationById(id: String): Formation? {
+        // Check standard formations first
+        formations.find { it.id == id }?.let { return it }
+
+        // Check if it's a custom layout ID
+        if (id.startsWith("custom_")) {
+            val playerCount = id.removePrefix("custom_").toIntOrNull()
+            if (playerCount != null && playerCount in 5..10) {
+                return getDefaultCustomLayout(playerCount)
+            }
+        }
+        return null
+    }
+
+    fun getCustomLayoutPlayerCounts(): List<Int> = listOf(5, 6, 7, 8, 9, 10)
+
+    fun getDefaultCustomLayout(playerCount: Int): Formation {
+        require(playerCount in 5..10) { "Player count must be between 5 and 10" }
+
+        return Formation(
+            id = "custom_$playerCount",
+            name = "$playerCount-a-side",
+            displayName = "$playerCount-a-side Custom",
+            positions = generateDefaultPositions(playerCount),
+            playerCount = playerCount,
+            isCustomizable = true
+        )
+    }
+
+    private fun generateDefaultPositions(playerCount: Int): List<Position> {
+        return when (playerCount) {
+            5 -> listOf(
+                Position(1, PositionRole.GOALKEEPER, 0.5f, 0.10f),
+                Position(2, PositionRole.DEFENDER, 0.25f, 0.30f),
+                Position(3, PositionRole.DEFENDER, 0.75f, 0.30f),
+                Position(4, PositionRole.MIDFIELDER, 0.5f, 0.55f),
+                Position(5, PositionRole.FORWARD, 0.5f, 0.80f)
+            )
+            6 -> listOf(
+                Position(1, PositionRole.GOALKEEPER, 0.5f, 0.10f),
+                Position(2, PositionRole.DEFENDER, 0.25f, 0.28f),
+                Position(3, PositionRole.DEFENDER, 0.75f, 0.28f),
+                Position(4, PositionRole.MIDFIELDER, 0.30f, 0.55f),
+                Position(5, PositionRole.MIDFIELDER, 0.70f, 0.55f),
+                Position(6, PositionRole.FORWARD, 0.5f, 0.80f)
+            )
+            7 -> listOf(
+                Position(1, PositionRole.GOALKEEPER, 0.5f, 0.10f),
+                Position(2, PositionRole.DEFENDER, 0.20f, 0.28f),
+                Position(3, PositionRole.DEFENDER, 0.5f, 0.25f),
+                Position(4, PositionRole.DEFENDER, 0.80f, 0.28f),
+                Position(5, PositionRole.MIDFIELDER, 0.35f, 0.52f),
+                Position(6, PositionRole.MIDFIELDER, 0.65f, 0.52f),
+                Position(7, PositionRole.FORWARD, 0.5f, 0.80f)
+            )
+            8 -> listOf(
+                Position(1, PositionRole.GOALKEEPER, 0.5f, 0.10f),
+                Position(2, PositionRole.DEFENDER, 0.20f, 0.28f),
+                Position(3, PositionRole.DEFENDER, 0.5f, 0.25f),
+                Position(4, PositionRole.DEFENDER, 0.80f, 0.28f),
+                Position(5, PositionRole.MIDFIELDER, 0.25f, 0.52f),
+                Position(6, PositionRole.MIDFIELDER, 0.75f, 0.52f),
+                Position(7, PositionRole.FORWARD, 0.35f, 0.78f),
+                Position(8, PositionRole.FORWARD, 0.65f, 0.78f)
+            )
+            9 -> listOf(
+                Position(1, PositionRole.GOALKEEPER, 0.5f, 0.08f),
+                Position(2, PositionRole.DEFENDER, 0.18f, 0.25f),
+                Position(3, PositionRole.DEFENDER, 0.5f, 0.22f),
+                Position(4, PositionRole.DEFENDER, 0.82f, 0.25f),
+                Position(5, PositionRole.MIDFIELDER, 0.20f, 0.50f),
+                Position(6, PositionRole.MIDFIELDER, 0.5f, 0.47f),
+                Position(7, PositionRole.MIDFIELDER, 0.80f, 0.50f),
+                Position(8, PositionRole.FORWARD, 0.35f, 0.77f),
+                Position(9, PositionRole.FORWARD, 0.65f, 0.77f)
+            )
+            10 -> listOf(
+                Position(1, PositionRole.GOALKEEPER, 0.5f, 0.08f),
+                Position(2, PositionRole.DEFENDER, 0.15f, 0.25f),
+                Position(3, PositionRole.DEFENDER, 0.40f, 0.22f),
+                Position(4, PositionRole.DEFENDER, 0.60f, 0.22f),
+                Position(5, PositionRole.DEFENDER, 0.85f, 0.25f),
+                Position(6, PositionRole.MIDFIELDER, 0.25f, 0.50f),
+                Position(7, PositionRole.MIDFIELDER, 0.5f, 0.47f),
+                Position(8, PositionRole.MIDFIELDER, 0.75f, 0.50f),
+                Position(9, PositionRole.FORWARD, 0.35f, 0.77f),
+                Position(10, PositionRole.FORWARD, 0.65f, 0.77f)
+            )
+            else -> emptyList()
+        }
+    }
 
     private fun create442(): Formation = Formation(
         id = "442",

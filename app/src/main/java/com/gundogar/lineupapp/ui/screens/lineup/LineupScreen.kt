@@ -50,12 +50,14 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gundogar.lineupapp.ui.screens.customization.TeamCustomizationSheet
+import com.gundogar.lineupapp.ui.screens.lineup.components.DraggablePlayerJersey
 import com.gundogar.lineupapp.ui.screens.lineup.components.FootballPitch
 import com.gundogar.lineupapp.ui.screens.lineup.components.PlayerJersey
 import com.gundogar.lineupapp.ui.screens.lineup.components.PlayerNameDialog
@@ -71,6 +73,7 @@ import kotlinx.coroutines.launch
 fun LineupScreen(
     formationId: String,
     savedLineupId: Long? = null,
+    playerCount: Int? = null,
     onNavigateBack: () -> Unit,
     onLineupSaved: () -> Unit = {},
     viewModel: LineupViewModel = viewModel()
@@ -82,11 +85,11 @@ fun LineupScreen(
     val graphicsLayer = rememberGraphicsLayer()
     var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    LaunchedEffect(formationId, savedLineupId) {
-        if (savedLineupId != null) {
-            viewModel.loadSavedLineup(savedLineupId)
-        } else {
-            viewModel.loadFormation(formationId)
+    LaunchedEffect(formationId, savedLineupId, playerCount) {
+        when {
+            savedLineupId != null -> viewModel.loadSavedLineup(savedLineupId)
+            playerCount != null && playerCount in 5..10 -> viewModel.loadCustomLayout(playerCount)
+            else -> viewModel.loadFormation(formationId)
         }
     }
 
@@ -170,24 +173,43 @@ fun LineupScreen(
                             )
 
                             // Position players on the pitch
-                            state.formation?.positions?.forEach { position ->
-                                val player = state.players[position.id]
+                            BoxWithConstraints(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                val pitchWidthPx = maxWidth.value * LocalDensity.current.density
+                                val pitchHeightPx = maxHeight.value * LocalDensity.current.density
 
-                                BoxWithConstraints(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
+                                state.effectivePositions.forEach { position ->
+                                    val player = state.players[position.id]
                                     val xOffset = (position.xPercent * maxWidth.value - 24).dp
                                     val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
 
-                                    PlayerJersey(
-                                        position = position,
-                                        player = player,
-                                        teamConfig = state.teamConfig,
-                                        onClick = { viewModel.onPlayerClick(position) },
-                                        modifier = Modifier.offset {
-                                            IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
-                                        }
-                                    )
+                                    if (state.isCustomizable) {
+                                        DraggablePlayerJersey(
+                                            position = position,
+                                            player = player,
+                                            teamConfig = state.teamConfig,
+                                            pitchWidthPx = pitchWidthPx,
+                                            pitchHeightPx = pitchHeightPx,
+                                            onPositionDrag = { positionId, newXPercent, newYPercent ->
+                                                viewModel.updatePositionCoordinates(positionId, newXPercent, newYPercent)
+                                            },
+                                            onClick = { viewModel.onPlayerClick(position) },
+                                            modifier = Modifier.offset {
+                                                IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                            }
+                                        )
+                                    } else {
+                                        PlayerJersey(
+                                            position = position,
+                                            player = player,
+                                            teamConfig = state.teamConfig,
+                                            onClick = { viewModel.onPlayerClick(position) },
+                                            modifier = Modifier.offset {
+                                                IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }

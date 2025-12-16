@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.gundogar.lineupapp.ui.screens.formation.FormationSelectionScreen
 import com.gundogar.lineupapp.ui.screens.lineup.LineupScreen
 import com.gundogar.lineupapp.ui.screens.saved.SavedLineupsScreen
+import com.gundogar.lineupapp.ui.screens.teamsize.TeamSizeSelectionScreen
 
 @Composable
 fun LineUpNavGraph(
@@ -21,11 +22,11 @@ fun LineUpNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.FormationSelection.route
+        startDestination = Screen.TeamSizeSelection.route
     ) {
-        // Formation Selection Screen
+        // Team Size Selection Screen (new entry point)
         composable(
-            route = Screen.FormationSelection.route,
+            route = Screen.TeamSizeSelection.route,
             enterTransition = {
                 fadeIn(animationSpec = tween(300))
             },
@@ -40,6 +41,53 @@ fun LineUpNavGraph(
                     towards = AnimatedContentTransitionScope.SlideDirection.Right,
                     animationSpec = tween(300)
                 ) + fadeIn(animationSpec = tween(300))
+            }
+        ) {
+            TeamSizeSelectionScreen(
+                onTeamSizeSelected = { playerCount ->
+                    if (playerCount == 11) {
+                        navController.navigate(Screen.FormationSelection.route)
+                    } else {
+                        navController.navigate(
+                            Screen.Lineup.createRoute(
+                                formationId = "custom_$playerCount",
+                                playerCount = playerCount
+                            )
+                        )
+                    }
+                },
+                onViewSavedLineups = {
+                    navController.navigate(Screen.SavedLineups.route)
+                }
+            )
+        }
+
+        // Formation Selection Screen (only for 11 players)
+        composable(
+            route = Screen.FormationSelection.route,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
             }
         ) {
             FormationSelectionScreen(
@@ -74,10 +122,11 @@ fun LineUpNavGraph(
             SavedLineupsScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onCreateNew = {
-                    navController.popBackStack()
+                    navController.navigate(Screen.TeamSizeSelection.route) {
+                        popUpTo(Screen.TeamSizeSelection.route) { inclusive = true }
+                    }
                 },
                 onOpenLineup = { lineupId ->
-                    // Navigate to lineup screen with the saved lineup's formation
                     navController.navigate(Screen.Lineup.createRoute("saved", lineupId))
                 },
                 onEditLineup = { lineupId ->
@@ -92,6 +141,11 @@ fun LineUpNavGraph(
             arguments = listOf(
                 navArgument("formationId") { type = NavType.StringType },
                 navArgument("lineupId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("playerCount") {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -116,15 +170,17 @@ fun LineUpNavGraph(
             val formationId = backStackEntry.arguments?.getString("formationId") ?: "442"
             val lineupIdStr = backStackEntry.arguments?.getString("lineupId")
             val lineupId = lineupIdStr?.toLongOrNull()
+            val playerCountStr = backStackEntry.arguments?.getString("playerCount")
+            val playerCount = playerCountStr?.toIntOrNull()
 
             LineupScreen(
                 formationId = formationId,
                 savedLineupId = lineupId,
+                playerCount = playerCount,
                 onNavigateBack = { navController.popBackStack() },
                 onLineupSaved = {
-                    // Navigate to saved lineups after saving
                     navController.navigate(Screen.SavedLineups.route) {
-                        popUpTo(Screen.FormationSelection.route)
+                        popUpTo(Screen.TeamSizeSelection.route)
                     }
                 }
             )

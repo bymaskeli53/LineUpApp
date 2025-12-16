@@ -11,6 +11,8 @@ data class SavedLineupEntity(
     val formationId: String,
     val formationName: String,
     val playersJson: String,
+    val positionsJson: String? = null, // Custom positions for 5-10 player layouts
+    val playerCount: Int = 11,
     val primaryColor: Long,
     val secondaryColor: Long,
     val jerseyStyle: String,
