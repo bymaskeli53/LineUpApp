@@ -1,3 +1,91 @@
 <resources>
-    <string name="app_name">LineUpApp</string>
+    <string name="app_name">LineUp App</string>
+
+    <!-- Screen Titles -->
+    <string name="screen_title_lineup_app">LineUp App</string>
+    <string name="screen_title_my_lineups">My Lineups</string>
+    <string name="screen_title_choose_formation">Choose Formation</string>
+
+    <!-- Team Size Selection -->
+    <string name="team_size_title">How many players?</string>
+    <string name="team_size_5_side">5-a-side</string>
+    <string name="team_size_6_side">6-a-side</string>
+    <string name="team_size_7_side">7-a-side</string>
+    <string name="team_size_8_side">8-a-side</string>
+    <string name="team_size_9_side">9-a-side</string>
+    <string name="team_size_10_side">10-a-side</string>
+    <string name="team_size_full_11">Full 11</string>
+    <string name="team_size_drag_drop">Drag &amp; drop</string>
+    <string name="team_size_fixed_formations">Fixed formations</string>
+
+    <!-- Common Buttons -->
+    <string name="btn_continue">Continue</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_update">Update</string>
+    <string name="btn_share">Share</string>
+    <string name="btn_customize">Customize</string>
+    <string name="btn_apply">Apply</string>
+    <string name="btn_select">Select</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_delete">Delete</string>
+
+    <!-- Player Dialog -->
+    <string name="player_details">Player Details</string>
+    <string name="player_position_format">Position: %s</string>
+    <string name="player_name_label">Player Name</string>
+    <string name="player_name_placeholder">Enter name</string>
+    <string name="player_number_label">Number</string>
+    <string name="player_number_placeholder">1–99</string>
+    <string name="player_rating">Player Rating</string>
+    <string name="player_tap_to_add">Tap to add</string>
+
+    <!-- Positions -->
+    <string name="position_goalkeeper">Goalkeeper</string>
+    <string name="position_defender">Defender</string>
+    <string name="position_midfielder">Midfielder</string>
+    <string name="position_forward">Forward</string>
+
+    <!-- Team Customization -->
+    <string name="customization_title">Team Customization</string>
+    <string name="customization_team_name">Team Name</string>
+    <string name="customization_team_name_hint">Enter team name</string>
+    <string name="customization_jersey_colors">Jersey Colors</string>
+    <string name="customization_primary_color">Primary Color</string>
+    <string name="customization_secondary_color">Secondary Color</string>
+    <string name="customization_jersey_style">Jersey Style</string>
+    <string name="customization_preview">Preview</string>
+    <string name="customization_select_primary_color">Select Primary Color</string>
+    <string name="customization_select_secondary_color">Select Secondary Color</string>
+
+    <!-- Jersey Styles -->
+    <string name="jersey_style_solid">Solid</string>
+    <string name="jersey_style_vertical_stripes">Vertical Stripes</string>
+    <string name="jersey_style_horizontal_stripes">Horizontal Stripes</string>
+    <string name="jersey_style_halves">Halves</string>
+    <string name="jersey_style_sash">Diagonal Sash</string>
+    <string name="jersey_style_hoops">Hoops</string>
+
+    <!-- Saved Lineups -->
+    <string name="saved_lineups_empty_title">No Saved Lineups</string>
+    <string name="saved_lineups_empty_subtitle">Create your first lineup by tapping the + button below</string>
+    <string name="saved_lineups_delete_title">Delete Lineup?</string>
+    <string name="saved_lineups_delete_message">Are you sure you want to delete \"%s\"? This action cannot be undone.</string>
+    <string name="saved_lineups_players_format">%d players</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_back">Back</string>
+    <string name="cd_my_lineups">My Lineups</string>
+    <string name="cd_create_new_lineup">Create new lineup</string>
+    <string name="cd_edit">Edit</string>
+    <string name="cd_delete">Delete</string>
+    <string name="cd_selected">Selected</string>
+    <string name="cd_select">Select</string>
+
+    <!-- Share -->
+    <string name="share_lineup">Share Lineup</string>
+    <string name="share_lineup_subject">%s Lineup</string>
+    <string name="share_lineup_text">Check out my %s lineup!</string>
+    <string name="share_failed">Failed to share image</string>
+    <string name="save_success">Lineup saved to gallery</string>
+    <string name="save_failed">Failed to save image</string>
 </resources>

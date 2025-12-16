@@ -33,9 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.TeamConfig
 import com.gundogar.lineupapp.ui.components.jersey.JerseyIcon
 import com.gundogar.lineupapp.ui.screens.customization.components.ColorPickerDialog
@@ -63,7 +65,7 @@ fun TeamCustomizationSheet(
     ) {
         // Header
         Text(
-            text = "Team Customization",
+            text = stringResource(R.string.customization_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -71,7 +73,7 @@ fun TeamCustomizationSheet(
 
         // Team Name Section
         Text(
-            text = "Team Name",
+            text = stringResource(R.string.customization_team_name),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -83,7 +85,7 @@ fun TeamCustomizationSheet(
                 teamName = it
                 onTeamConfigChange(teamConfig.copy(teamName = it))
             },
-            label = { Text("Enter team name") },
+            label = { Text(stringResource(R.string.customization_team_name_hint)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -94,7 +96,7 @@ fun TeamCustomizationSheet(
 
         // Jersey Colors Section
         Text(
-            text = "Jersey Colors",
+            text = stringResource(R.string.customization_jersey_colors),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -102,7 +104,7 @@ fun TeamCustomizationSheet(
 
         // Primary Color
         ColorRow(
-            label = "Primary Color",
+            label = stringResource(R.string.customization_primary_color),
             color = teamConfig.primaryColor,
             onClick = { showPrimaryColorPicker = true }
         )
@@ -111,7 +113,7 @@ fun TeamCustomizationSheet(
 
         // Secondary Color
         ColorRow(
-            label = "Secondary Color",
+            label = stringResource(R.string.customization_secondary_color),
             color = teamConfig.secondaryColor,
             onClick = { showSecondaryColorPicker = true }
         )
@@ -122,7 +124,7 @@ fun TeamCustomizationSheet(
 
         // Jersey Style Section
         Text(
-            text = "Jersey Style",
+            text = stringResource(R.string.customization_jersey_style),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -143,7 +145,7 @@ fun TeamCustomizationSheet(
 
         // Preview Section
         Text(
-            text = "Preview",
+            text = stringResource(R.string.customization_preview),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -178,7 +180,7 @@ fun TeamCustomizationSheet(
             )
         ) {
             Text(
-                text = "Apply",
+                text = stringResource(R.string.btn_apply),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
@@ -188,7 +190,7 @@ fun TeamCustomizationSheet(
     // Color Picker Dialogs
     if (showPrimaryColorPicker) {
         ColorPickerDialog(
-            title = "Select Primary Color",
+            title = stringResource(R.string.customization_select_primary_color),
             currentColor = teamConfig.primaryColor,
             onColorSelected = { color ->
                 onTeamConfigChange(teamConfig.copy(primaryColor = color))
@@ -199,7 +201,7 @@ fun TeamCustomizationSheet(
 
     if (showSecondaryColorPicker) {
         ColorPickerDialog(
-            title = "Select Secondary Color",
+            title = stringResource(R.string.customization_select_secondary_color),
             currentColor = teamConfig.secondaryColor,
             onColorSelected = { color ->
                 onTeamConfigChange(teamConfig.copy(secondaryColor = color))
@@ -245,7 +247,7 @@ private fun ColorRow(
 
         Icon(
             imageVector = Icons.Default.Check,
-            contentDescription = "Select",
+            contentDescription = stringResource(R.string.cd_select),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

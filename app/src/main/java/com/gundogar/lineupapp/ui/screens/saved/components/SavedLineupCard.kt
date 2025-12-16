@@ -27,10 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.JerseyStyle
 import com.gundogar.lineupapp.data.model.Player
 import com.gundogar.lineupapp.data.model.TeamConfig
@@ -116,7 +118,7 @@ fun SavedLineupCard(
 
                     val playerCount = lineup.players.count { it.value.name.isNotBlank() }
                     Text(
-                        text = "$playerCount players",
+                        text = stringResource(R.string.saved_lineups_players_format, playerCount),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -141,7 +143,7 @@ fun SavedLineupCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit",
+                        contentDescription = stringResource(R.string.cd_edit),
                         tint = GrassGreen,
                         modifier = Modifier.size(20.dp)
                     )
@@ -153,7 +155,7 @@ fun SavedLineupCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(R.string.cd_delete),
                         tint = Color.Red.copy(alpha = 0.7f),
                         modifier = Modifier.size(20.dp)
                     )

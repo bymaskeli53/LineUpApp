@@ -1,0 +1,91 @@
+<resources>
+    <string name="app_name">LineUp App</string>
+
+    <!-- Screen Titles -->
+    <string name="screen_title_lineup_app">LineUp App</string>
+    <string name="screen_title_my_lineups">Kadrolarım</string>
+    <string name="screen_title_choose_formation">Diziliş Seç</string>
+
+    <!-- Team Size Selection -->
+    <string name="team_size_title">Kaç oyuncu?</string>
+    <string name="team_size_5_side">5\'e 5</string>
+    <string name="team_size_6_side">6\'ya 6</string>
+    <string name="team_size_7_side">7\'ye 7</string>
+    <string name="team_size_8_side">8\'e 8</string>
+    <string name="team_size_9_side">9\'a 9</string>
+    <string name="team_size_10_side">10\'a 10</string>
+    <string name="team_size_full_11">11 Kişi</string>
+    <string name="team_size_drag_drop">Sürükle bırak</string>
+    <string name="team_size_fixed_formations">Sabit dizilişler</string>
+
+    <!-- Common Buttons -->
+    <string name="btn_continue">Devam</string>
+    <string name="btn_save">Kaydet</string>
+    <string name="btn_update">Güncelle</string>
+    <string name="btn_share">Paylaş</string>
+    <string name="btn_customize">Özelleştir</string>
+    <string name="btn_apply">Uygula</string>
+    <string name="btn_select">Seç</string>
+    <string name="btn_cancel">İptal</string>
+    <string name="btn_delete">Sil</string>
+
+    <!-- Player Dialog -->
+    <string name="player_details">Oyuncu Detayları</string>
+    <string name="player_position_format">Pozisyon: %s</string>
+    <string name="player_name_label">Oyuncu Adı</string>
+    <string name="player_name_placeholder">İsim girin</string>
+    <string name="player_number_label">Numara</string>
+    <string name="player_number_placeholder">1–99</string>
+    <string name="player_rating">Oyuncu Puanı</string>
+    <string name="player_tap_to_add">Eklemek için dokun</string>
+
+    <!-- Positions -->
+    <string name="position_goalkeeper">Kaleci</string>
+    <string name="position_defender">Defans</string>
+    <string name="position_midfielder">Orta Saha</string>
+    <string name="position_forward">Forvet</string>
+
+    <!-- Team Customization -->
+    <string name="customization_title">Takım Özelleştirme</string>
+    <string name="customization_team_name">Takım Adı</string>
+    <string name="customization_team_name_hint">Takım adı girin</string>
+    <string name="customization_jersey_colors">Forma Renkleri</string>
+    <string name="customization_primary_color">Ana Renk</string>
+    <string name="customization_secondary_color">İkinci Renk</string>
+    <string name="customization_jersey_style">Forma Stili</string>
+    <string name="customization_preview">Önizleme</string>
+    <string name="customization_select_primary_color">Ana Rengi Seçin</string>
+    <string name="customization_select_secondary_color">İkinci Rengi Seçin</string>
+
+    <!-- Jersey Styles -->
+    <string name="jersey_style_solid">Düz</string>
+    <string name="jersey_style_vertical_stripes">Dikey Çizgili</string>
+    <string name="jersey_style_horizontal_stripes">Yatay Çizgili</string>
+    <string name="jersey_style_halves">İki Renkli</string>
+    <string name="jersey_style_sash">Çapraz Bant</string>
+    <string name="jersey_style_hoops">Halka</string>
+
+    <!-- Saved Lineups -->
+    <string name="saved_lineups_empty_title">Kayıtlı Kadro Yok</string>
+    <string name="saved_lineups_empty_subtitle">Aşağıdaki + butonuna dokunarak ilk kadronuzu oluşturun</string>
+    <string name="saved_lineups_delete_title">Kadro silinsin mi?</string>
+    <string name="saved_lineups_delete_message">\"%s\" kadrosunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
+    <string name="saved_lineups_players_format">%d oyuncu</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_back">Geri</string>
+    <string name="cd_my_lineups">Kadrolarım</string>
+    <string name="cd_create_new_lineup">Yeni kadro oluştur</string>
+    <string name="cd_edit">Düzenle</string>
+    <string name="cd_delete">Sil</string>
+    <string name="cd_selected">Seçili</string>
+    <string name="cd_select">Seç</string>
+
+    <!-- Share -->
+    <string name="share_lineup">Kadroyu Paylaş</string>
+    <string name="share_lineup_subject">%s Kadrosu</string>
+    <string name="share_lineup_text">%s kadroma göz atın!</string>
+    <string name="share_failed">Resim paylaşılamadı</string>
+    <string name="save_success">Kadro galeriye kaydedildi</string>
+    <string name="save_failed">Resim kaydedilemedi</string>
+</resources>

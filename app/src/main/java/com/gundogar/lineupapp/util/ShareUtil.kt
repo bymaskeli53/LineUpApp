@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.gundogar.lineupapp.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -40,16 +41,16 @@ object ShareUtil {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "image/png"
                 putExtra(Intent.EXTRA_STREAM, contentUri)
-                putExtra(Intent.EXTRA_SUBJECT, "$teamName Lineup")
-                putExtra(Intent.EXTRA_TEXT, "Check out my $teamName lineup!")
+                putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.share_lineup_subject, teamName))
+                putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_lineup_text, teamName))
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            context.startActivity(Intent.createChooser(shareIntent, "Share Lineup"))
+            context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_lineup)))
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(context, "Failed to share image", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.share_failed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -88,11 +89,11 @@ object ShareUtil {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
             }
 
-            Toast.makeText(context, "Lineup saved to gallery", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.save_success), Toast.LENGTH_SHORT).show()
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(context, "Failed to save image", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
         }
     }
 

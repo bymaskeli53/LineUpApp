@@ -26,9 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.theme.LineUpAppTheme
 import com.gundogar.lineupapp.ui.theme.SecondaryGold
 import com.gundogar.lineupapp.ui.theme.TeamBlack
@@ -110,7 +112,7 @@ fun ColorPickerDialog(
                 }
             ) {
                 Text(
-                    text = "Select",
+                    text = stringResource(R.string.btn_select),
                     color = SecondaryGold,
                     fontWeight = FontWeight.Bold
                 )
@@ -118,7 +120,7 @@ fun ColorPickerDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.btn_cancel))
             }
         }
     )
@@ -146,7 +148,7 @@ private fun ColorOption(
         if (isSelected) {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Selected",
+                contentDescription = stringResource(R.string.cd_selected),
                 tint = if (color.luminance() > 0.5f) Color.Black else Color.White,
                 modifier = Modifier.size(20.dp)
             )

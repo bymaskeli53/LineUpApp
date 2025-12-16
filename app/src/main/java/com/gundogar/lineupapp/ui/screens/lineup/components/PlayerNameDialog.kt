@@ -33,10 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.Position
 import com.gundogar.lineupapp.data.model.PositionRole
 import com.gundogar.lineupapp.ui.theme.GrassGreen
@@ -57,11 +59,13 @@ fun PlayerNameDialog(
     var rating by remember { mutableFloatStateOf((currentRating ?: 7.5).toFloat()) }
     var ratingEnabled by remember { mutableStateOf(currentRating != null) }
 
+    val positionName = getPositionNameString(position.role)
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Player Details",
+                text = stringResource(R.string.player_details),
                 fontWeight = FontWeight.Bold
             )
         },
@@ -70,7 +74,7 @@ fun PlayerNameDialog(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Text(
-                    text = "Position: ${getPositionName(position.role)}",
+                    text = stringResource(R.string.player_position_format, positionName),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -80,8 +84,8 @@ fun PlayerNameDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Player Name") },
-                    placeholder = { Text("Enter name") },
+                    label = { Text(stringResource(R.string.player_name_label)) },
+                    placeholder = { Text(stringResource(R.string.player_name_placeholder)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
@@ -102,8 +106,8 @@ fun PlayerNameDialog(
                                 numberText = input
                             }
                         },
-                        label = { Text("Number") },
-                        placeholder = { Text("1-99") },
+                        label = { Text(stringResource(R.string.player_number_label)) },
+                        placeholder = { Text(stringResource(R.string.player_number_placeholder)) },
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(
@@ -116,7 +120,7 @@ fun PlayerNameDialog(
 
                 // Rating Section
                 Text(
-                    text = "Player Rating",
+                    text = stringResource(R.string.player_rating),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -180,7 +184,7 @@ fun PlayerNameDialog(
                 }
             ) {
                 Text(
-                    text = "Save",
+                    text = stringResource(R.string.btn_save),
                     color = SecondaryGold,
                     fontWeight = FontWeight.Bold
                 )
@@ -188,7 +192,7 @@ fun PlayerNameDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.btn_cancel))
             }
         }
     )
@@ -230,12 +234,13 @@ fun getRatingColor(rating: Double): Color {
     }
 }
 
-private fun getPositionName(role: PositionRole): String {
+@Composable
+private fun getPositionNameString(role: PositionRole): String {
     return when (role) {
-        PositionRole.GOALKEEPER -> "Goalkeeper"
-        PositionRole.DEFENDER -> "Defender"
-        PositionRole.MIDFIELDER -> "Midfielder"
-        PositionRole.FORWARD -> "Forward"
+        PositionRole.GOALKEEPER -> stringResource(R.string.position_goalkeeper)
+        PositionRole.DEFENDER -> stringResource(R.string.position_defender)
+        PositionRole.MIDFIELDER -> stringResource(R.string.position_midfielder)
+        PositionRole.FORWARD -> stringResource(R.string.position_forward)
     }
 }
 

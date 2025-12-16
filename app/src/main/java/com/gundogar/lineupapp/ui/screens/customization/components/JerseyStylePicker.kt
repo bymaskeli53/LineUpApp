@@ -22,10 +22,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.JerseyStyle
 import com.gundogar.lineupapp.ui.theme.DefaultJerseyPrimary
 import com.gundogar.lineupapp.ui.theme.DefaultJerseySecondary
@@ -118,12 +120,24 @@ private fun JerseyStyleOption(
         }
 
         Text(
-            text = style.displayName,
+            text = getJerseyStyleDisplayName(style),
             fontSize = 10.sp,
             textAlign = TextAlign.Center,
             color = if (isSelected) SecondaryGold else MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(top = 4.dp)
         )
+    }
+}
+
+@Composable
+private fun getJerseyStyleDisplayName(style: JerseyStyle): String {
+    return when (style) {
+        JerseyStyle.SOLID -> stringResource(R.string.jersey_style_solid)
+        JerseyStyle.VERTICAL_STRIPES -> stringResource(R.string.jersey_style_vertical_stripes)
+        JerseyStyle.HORIZONTAL_STRIPES -> stringResource(R.string.jersey_style_horizontal_stripes)
+        JerseyStyle.HALVES -> stringResource(R.string.jersey_style_halves)
+        JerseyStyle.SASH -> stringResource(R.string.jersey_style_sash)
+        JerseyStyle.HOOPS -> stringResource(R.string.jersey_style_hoops)
     }
 }
 

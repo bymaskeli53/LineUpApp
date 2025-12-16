@@ -35,10 +35,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.formation.components.FormationCard
 import com.gundogar.lineupapp.ui.theme.GrassGreen
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
@@ -62,7 +64,7 @@ fun FormationSelectionScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Choose Formation",
+                        text = stringResource(R.string.screen_title_choose_formation),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -70,7 +72,7 @@ fun FormationSelectionScreen(
                     IconButton(onClick = onViewSavedLineups) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.List,
-                            contentDescription = "My Lineups",
+                            contentDescription = stringResource(R.string.cd_my_lineups),
                             tint = SecondaryGold
                         )
                     }
@@ -101,7 +103,7 @@ fun FormationSelectionScreen(
                     },
                     text = {
                         Text(
-                            text = "Continue",
+                            text = stringResource(R.string.btn_continue),
                             fontWeight = FontWeight.Bold
                         )
                     }

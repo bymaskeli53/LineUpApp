@@ -41,11 +41,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.theme.GrassGreen
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
 import com.gundogar.lineupapp.ui.theme.LineUpAppTheme
@@ -63,14 +65,17 @@ fun TeamSizeSelectionScreen(
     onTeamSizeSelected: (Int) -> Unit,
     onViewSavedLineups: () -> Unit
 ) {
+    val dragDropSubtitle = stringResource(R.string.team_size_drag_drop)
+    val fixedFormationsSubtitle = stringResource(R.string.team_size_fixed_formations)
+
     val teamSizes = listOf(
-        TeamSizeOption(5, "5-a-side", "Drag & drop"),
-        TeamSizeOption(6, "6-a-side", "Drag & drop"),
-        TeamSizeOption(7, "7-a-side", "Drag & drop"),
-        TeamSizeOption(8, "8-a-side", "Drag & drop"),
-        TeamSizeOption(9, "9-a-side", "Drag & drop"),
-        TeamSizeOption(10, "10-a-side", "Drag & drop"),
-        TeamSizeOption(11, "Full 11", "Fixed formations")
+        TeamSizeOption(5, stringResource(R.string.team_size_5_side), dragDropSubtitle),
+        TeamSizeOption(6, stringResource(R.string.team_size_6_side), dragDropSubtitle),
+        TeamSizeOption(7, stringResource(R.string.team_size_7_side), dragDropSubtitle),
+        TeamSizeOption(8, stringResource(R.string.team_size_8_side), dragDropSubtitle),
+        TeamSizeOption(9, stringResource(R.string.team_size_9_side), dragDropSubtitle),
+        TeamSizeOption(10, stringResource(R.string.team_size_10_side), dragDropSubtitle),
+        TeamSizeOption(11, stringResource(R.string.team_size_full_11), fixedFormationsSubtitle)
     )
     var selectedSize by remember { mutableIntStateOf(0) }
 
@@ -82,7 +87,7 @@ fun TeamSizeSelectionScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "LineUp App",
+                        text = stringResource(R.string.screen_title_lineup_app),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -90,7 +95,7 @@ fun TeamSizeSelectionScreen(
                     IconButton(onClick = onViewSavedLineups) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.List,
-                            contentDescription = "My Lineups",
+                            contentDescription = stringResource(R.string.cd_my_lineups),
                             tint = SecondaryGold
                         )
                     }
@@ -113,7 +118,7 @@ fun TeamSizeSelectionScreen(
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Continue", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_continue), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -130,7 +135,7 @@ fun TeamSizeSelectionScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "How many players?",
+                text = stringResource(R.string.team_size_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,

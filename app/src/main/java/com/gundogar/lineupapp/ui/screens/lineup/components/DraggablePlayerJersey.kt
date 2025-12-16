@@ -29,11 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.Player
 import com.gundogar.lineupapp.data.model.Position
 import com.gundogar.lineupapp.data.model.PositionRole
@@ -154,7 +156,7 @@ fun DraggablePlayerJersey(
         }
 
         Text(
-            text = player?.name?.takeIf { it.isNotBlank() } ?: "Tap to add",
+            text = player?.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.player_tap_to_add),
             color = Color.White,
             fontSize = 12.sp,
             fontWeight = if (player?.name?.isNotBlank() == true) FontWeight.Medium else FontWeight.Normal,

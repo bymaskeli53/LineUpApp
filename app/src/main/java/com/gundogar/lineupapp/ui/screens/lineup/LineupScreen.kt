@@ -51,11 +51,13 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.customization.TeamCustomizationSheet
 import com.gundogar.lineupapp.ui.screens.lineup.components.DraggablePlayerJersey
 import com.gundogar.lineupapp.ui.screens.lineup.components.FootballPitch
@@ -109,7 +111,7 @@ fun LineupScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.cd_back),
                             tint = Color.White
                         )
                     }
@@ -236,7 +238,7 @@ fun LineupScreen(
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Customize", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_customize), fontWeight = FontWeight.Bold)
                     }
 
                     Button(
@@ -263,7 +265,7 @@ fun LineupScreen(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (state.savedLineupId != null) "Update" else "Save",
+                            text = stringResource(if (state.savedLineupId != null) R.string.btn_update else R.string.btn_save),
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -285,7 +287,7 @@ fun LineupScreen(
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Share", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_share), fontWeight = FontWeight.Bold)
                     }
                 }
             }

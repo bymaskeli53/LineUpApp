@@ -39,11 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.saved.components.SavedLineupCard
 import com.gundogar.lineupapp.ui.theme.GrassGreen
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
@@ -69,7 +71,7 @@ fun SavedLineupsScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "My Lineups",
+                        text = stringResource(R.string.screen_title_my_lineups),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -77,7 +79,7 @@ fun SavedLineupsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.cd_back),
                             tint = Color.White
                         )
                     }
@@ -96,7 +98,7 @@ fun SavedLineupsScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Create new lineup"
+                    contentDescription = stringResource(R.string.cd_create_new_lineup)
                 )
             }
         }
@@ -157,19 +159,19 @@ fun SavedLineupsScreen(
                 onDismissRequest = { viewModel.hideDeleteDialog() },
                 title = {
                     Text(
-                        text = "Delete Lineup?",
+                        text = stringResource(R.string.saved_lineups_delete_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
                 text = {
-                    Text("Are you sure you want to delete \"${state.lineupToDelete?.teamName}\"? This action cannot be undone.")
+                    Text(stringResource(R.string.saved_lineups_delete_message, state.lineupToDelete?.teamName ?: ""))
                 },
                 confirmButton = {
                     TextButton(
                         onClick = { viewModel.deleteLineup() }
                     ) {
                         Text(
-                            text = "Delete",
+                            text = stringResource(R.string.btn_delete),
                             color = Color.Red,
                             fontWeight = FontWeight.Bold
                         )
@@ -177,7 +179,7 @@ fun SavedLineupsScreen(
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.hideDeleteDialog() }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.btn_cancel))
                     }
                 }
             )
@@ -204,7 +206,7 @@ private fun EmptyState(onCreateNew: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "No Saved Lineups",
+            text = stringResource(R.string.saved_lineups_empty_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = Color.White
@@ -213,7 +215,7 @@ private fun EmptyState(onCreateNew: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Create your first lineup by tapping the + button below",
+            text = stringResource(R.string.saved_lineups_empty_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
