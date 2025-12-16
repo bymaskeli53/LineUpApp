@@ -245,7 +245,7 @@ private fun PlayerNameDialogPreview() {
     LineUpAppTheme {
         PlayerNameDialog(
             position = Position(10, PositionRole.FORWARD, 0.5f, 0.75f),
-            currentName = "Messi",
+            currentName = "Ronaldo",
             currentNumber = 10,
             currentRating = 9.3,
             onDismiss = {},
