@@ -279,90 +279,104 @@ fun LineupScreen(
 
                 // Bottom action bar (hidden in drawing mode)
                 if (!state.drawingState.isDrawingMode) {
-                    Row(
-                        modifier = Modifier
+                    Column(){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(GrassGreenDark.copy(alpha = 0.9f))
+                                .padding(4.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Button(
+                                onClick = { viewModel.toggleDrawingMode() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White.copy(alpha = 0.9f),
+                                    contentColor = GrassGreenDark
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Create,
+                                    contentDescription = stringResource(R.string.drawing_mode)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(stringResource(R.string.drawing_mode), fontWeight = FontWeight.Bold)
+
+                            }
+
+                            Button(
+                                onClick = { viewModel.showCustomizationSheet() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(stringResource(R.string.btn_customize), fontWeight = FontWeight.Bold)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(modifier = Modifier
                             .fillMaxWidth()
                             .background(GrassGreenDark.copy(alpha = 0.9f))
                             .padding(4.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        // Drawing mode button
-                        Button(
-                            onClick = { viewModel.toggleDrawingMode() },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White.copy(alpha = 0.9f),
-                                contentColor = GrassGreenDark
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Create,
-                                contentDescription = stringResource(R.string.drawing_mode)
-                            )
-                        }
+                            horizontalArrangement = Arrangement.SpaceAround){
 
-                        Button(
-                            onClick = { viewModel.showCustomizationSheet() },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = SecondaryGold,
-                                contentColor = GrassGreenDark
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(stringResource(R.string.btn_customize), fontWeight = FontWeight.Bold)
-                        }
-
-                        Button(
-                            onClick = {
-                                viewModel.saveLineupToDatabase(onSuccess = onLineupSaved)
-                            },
-                            enabled = !state.isSaving,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = GrassGreenDark
-                            )
-                        ) {
-                            if (state.isSaving) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.height(20.dp).width(20.dp),
-                                    strokeWidth = 2.dp,
-                                    color = GrassGreenDark
+                            Button(
+                                onClick = {
+                                    viewModel.saveLineupToDatabase(onSuccess = onLineupSaved)
+                                },
+                                enabled = !state.isSaving,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                                    contentColor = GrassGreenDark
                                 )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null
+                            ) {
+                                if (state.isSaving) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.height(20.dp).width(20.dp),
+                                        strokeWidth = 2.dp,
+                                        color = GrassGreenDark
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = stringResource(if (state.savedLineupId != null) R.string.btn_update else R.string.btn_save),
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(if (state.savedLineupId != null) R.string.btn_update else R.string.btn_save),
-                                fontWeight = FontWeight.Bold
-                            )
+
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                        ShareUtil.shareLineupImage(context, bitmap, state.teamConfig.teamName)
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(stringResource(R.string.btn_share), fontWeight = FontWeight.Bold)
+                            }
                         }
 
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                                    ShareUtil.shareLineupImage(context, bitmap, state.teamConfig.teamName)
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Share,
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(stringResource(R.string.btn_share), fontWeight = FontWeight.Bold)
-                        }
                     }
                 }
             }
