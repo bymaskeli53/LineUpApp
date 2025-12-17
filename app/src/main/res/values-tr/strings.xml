@@ -103,4 +103,17 @@
     <string name="stroke_thin">İnce</string>
     <string name="stroke_medium">Orta</string>
     <string name="stroke_thick">Kalın</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Atla</string>
+    <string name="onboarding_next">İleri</string>
+    <string name="onboarding_get_started">Başla</string>
+    <string name="onboarding_welcome_title">LineUp\'a Hoş Geldiniz</string>
+    <string name="onboarding_welcome_description">5\'e 5\'ten 11 kişilik tam kadroya kadar her takım boyutu için profesyonel futbol kadroları oluşturun. Antrenörler, analistler ve futbol tutkunları için ideal.</string>
+    <string name="onboarding_formations_title">Dizilişinizi Seçin</string>
+    <string name="onboarding_formations_description">4-4-2, 4-3-3 gibi klasik dizilişlerden seçim yapın veya özel düzenler oluşturun. Oyuncuları tam istediğiniz yere sürükleyip bırakın.</string>
+    <string name="onboarding_tactics_title">Taktiklerinizi Çizin</string>
+    <string name="onboarding_tactics_description">Oyunları ve stratejileri göstermek için oklar, çizgiler ve şekiller kullanın. Çeşitli renkler ve kalınlıklar oyun planınızı net bir şekilde iletmenize yardımcı olur.</string>
+    <string name="onboarding_share_title">Paylaş ve Kaydet</string>
+    <string name="onboarding_share_description">Kadrolarınızı ileride kullanmak üzere kaydedin ve takımınızla paylaşın. Forma renklerini ve stillerini takımınızın kimliğine göre özelleştirin.</string>
 </resources>

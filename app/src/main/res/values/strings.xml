@@ -103,4 +103,17 @@
     <string name="stroke_thin">Thin</string>
     <string name="stroke_medium">Medium</string>
     <string name="stroke_thick">Thick</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_welcome_title">Welcome to LineUp</string>
+    <string name="onboarding_welcome_description">Create professional football lineups for any team size from 5-a-side to full 11 players. Perfect for coaches, analysts, and football enthusiasts.</string>
+    <string name="onboarding_formations_title">Choose Your Formation</string>
+    <string name="onboarding_formations_description">Select from classic formations like 4-4-2, 4-3-3, or create custom layouts. Drag and drop players to position them exactly where you want.</string>
+    <string name="onboarding_tactics_title">Draw Your Tactics</string>
+    <string name="onboarding_tactics_description">Use arrows, lines, and shapes to illustrate plays and strategies. Multiple colors and stroke widths help communicate your game plan clearly.</string>
+    <string name="onboarding_share_title">Share &amp; Save</string>
+    <string name="onboarding_share_description">Save your lineups for future reference and share them with your team. Customize jersey colors and styles to match your team\'s identity.</string>
 </resources>

@@ -5,25 +5,56 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.gundogar.lineupapp.data.preferences.OnboardingPreferences
 import com.gundogar.lineupapp.ui.screens.formation.FormationSelectionScreen
 import com.gundogar.lineupapp.ui.screens.lineup.LineupScreen
+import com.gundogar.lineupapp.ui.screens.onboarding.OnboardingScreen
 import com.gundogar.lineupapp.ui.screens.saved.SavedLineupsScreen
 import com.gundogar.lineupapp.ui.screens.teamsize.TeamSizeSelectionScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun LineUpNavGraph(
+    startDestination: String = Screen.TeamSizeSelection.route,
     navController: NavHostController = rememberNavController()
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val onboardingPreferences = remember { OnboardingPreferences(context) }
+
     NavHost(
         navController = navController,
-        startDestination = Screen.TeamSizeSelection.route
+        startDestination = startDestination
     ) {
+        // OnBoarding Screen
+        composable(
+            route = Screen.OnBoarding.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(300))
+            },
+
+        ) {
+            OnboardingScreen(
+                onFinishOnboarding = {
+                    scope.launch {
+                        onboardingPreferences.setOnboardingCompleted()
+                    }
+                    navController.navigate(Screen.TeamSizeSelection.route) {
+                        popUpTo(Screen.OnBoarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         // Team Size Selection Screen (new entry point)
         composable(
             route = Screen.TeamSizeSelection.route,

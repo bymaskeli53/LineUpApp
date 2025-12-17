@@ -62,6 +62,11 @@ dependencies {
     // Gson for JSON serialization
     implementation(libs.gson)
 
+    // DataStore for preferences
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.androidx.splashscreen)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

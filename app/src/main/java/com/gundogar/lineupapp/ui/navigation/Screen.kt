@@ -1,6 +1,7 @@
 package com.gundogar.lineupapp.ui.navigation
 
 sealed class Screen(val route: String) {
+    object OnBoarding : Screen("onboarding")
     object TeamSizeSelection : Screen("team_size_selection")
 
     object FormationSelection : Screen("formation_selection")
