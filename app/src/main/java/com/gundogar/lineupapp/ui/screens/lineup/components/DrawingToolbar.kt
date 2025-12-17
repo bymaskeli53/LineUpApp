@@ -19,9 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -64,7 +62,6 @@ fun DrawingToolbar(
     onUndo: () -> Unit,
     onRedo: () -> Unit,
     onClear: () -> Unit,
-    onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showColorPicker by remember { mutableStateOf(false) }
@@ -209,17 +206,6 @@ fun DrawingToolbar(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Close button
-                IconButton(
-                    onClick = onClose,
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = stringResource(R.string.btn_cancel),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
             }
 
             // Color picker row (expandable)

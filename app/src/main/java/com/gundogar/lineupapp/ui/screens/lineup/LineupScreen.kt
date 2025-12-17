@@ -98,11 +98,12 @@ fun LineupScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding(),
-        topBar = {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding(),
+            topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -197,12 +198,14 @@ fun LineupScreen(
                                     modifier = Modifier.fillMaxSize()
                                 ) {
                                     val pitchWidthPx = maxWidth.value * LocalDensity.current.density
-                                    val pitchHeightPx = maxHeight.value * LocalDensity.current.density
+                                    val pitchHeightPx =
+                                        maxHeight.value * LocalDensity.current.density
 
                                     state.effectivePositions.forEach { position ->
                                         val player = state.players[position.id]
                                         val xOffset = (position.xPercent * maxWidth.value - 24).dp
-                                        val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
+                                        val yOffset =
+                                            ((1f - position.yPercent) * maxHeight.value - 30).dp
 
                                         if (state.isCustomizable) {
                                             DraggablePlayerJersey(
@@ -212,11 +215,18 @@ fun LineupScreen(
                                                 pitchWidthPx = pitchWidthPx,
                                                 pitchHeightPx = pitchHeightPx,
                                                 onPositionDrag = { positionId, newXPercent, newYPercent ->
-                                                    viewModel.updatePositionCoordinates(positionId, newXPercent, newYPercent)
+                                                    viewModel.updatePositionCoordinates(
+                                                        positionId,
+                                                        newXPercent,
+                                                        newYPercent
+                                                    )
                                                 },
                                                 onClick = { viewModel.onPlayerClick(position) },
                                                 modifier = Modifier.offset {
-                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                                    IntOffset(
+                                                        xOffset.roundToPx(),
+                                                        yOffset.roundToPx()
+                                                    )
                                                 }
                                             )
                                         } else {
@@ -226,7 +236,10 @@ fun LineupScreen(
                                                 teamConfig = state.teamConfig,
                                                 onClick = { viewModel.onPlayerClick(position) },
                                                 modifier = Modifier.offset {
-                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                                    IntOffset(
+                                                        xOffset.roundToPx(),
+                                                        yOffset.roundToPx()
+                                                    )
                                                 }
                                             )
                                         }
@@ -240,7 +253,8 @@ fun LineupScreen(
                                     state.effectivePositions.forEach { position ->
                                         val player = state.players[position.id]
                                         val xOffset = (position.xPercent * maxWidth.value - 24).dp
-                                        val yOffset = ((1f - position.yPercent) * maxHeight.value - 30).dp
+                                        val yOffset =
+                                            ((1f - position.yPercent) * maxHeight.value - 30).dp
 
                                         PlayerJersey(
                                             position = position,
@@ -271,7 +285,6 @@ fun LineupScreen(
                             onUndo = { viewModel.undo() },
                             onRedo = { viewModel.redo() },
                             onClear = { viewModel.clearAllDrawings() },
-                            onClose = { viewModel.exitDrawingMode() },
                             modifier = Modifier.align(Alignment.TopCenter)
                         )
                     }
@@ -279,7 +292,7 @@ fun LineupScreen(
 
                 // Bottom action bar (hidden in drawing mode)
                 if (!state.drawingState.isDrawingMode) {
-                    Column(){
+                    Column() {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -299,7 +312,10 @@ fun LineupScreen(
                                     contentDescription = stringResource(R.string.drawing_mode)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.drawing_mode), fontWeight = FontWeight.Bold)
+                                Text(
+                                    stringResource(R.string.drawing_mode),
+                                    fontWeight = FontWeight.Bold
+                                )
 
                             }
 
@@ -315,17 +331,22 @@ fun LineupScreen(
                                     contentDescription = null
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.btn_customize), fontWeight = FontWeight.Bold)
+                                Text(
+                                    stringResource(R.string.btn_customize),
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .background(GrassGreenDark.copy(alpha = 0.9f))
-                            .padding(4.dp),
-                            horizontalArrangement = Arrangement.SpaceAround){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(GrassGreenDark.copy(alpha = 0.9f))
+                                .padding(4.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
 
                             Button(
                                 onClick = {
@@ -339,7 +360,9 @@ fun LineupScreen(
                             ) {
                                 if (state.isSaving) {
                                     CircularProgressIndicator(
-                                        modifier = Modifier.height(20.dp).width(20.dp),
+                                        modifier = Modifier
+                                            .height(20.dp)
+                                            .width(20.dp),
                                         strokeWidth = 2.dp,
                                         color = GrassGreenDark
                                     )
@@ -360,7 +383,11 @@ fun LineupScreen(
                                 onClick = {
                                     scope.launch {
                                         val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                                        ShareUtil.shareLineupImage(context, bitmap, state.teamConfig.teamName)
+                                        ShareUtil.shareLineupImage(
+                                            context,
+                                            bitmap,
+                                            state.teamConfig.teamName
+                                        )
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(
@@ -373,14 +400,17 @@ fun LineupScreen(
                                     contentDescription = null
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.btn_share), fontWeight = FontWeight.Bold)
+                                Text(
+                                    stringResource(R.string.btn_share),
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
 
                     }
                 }
-            }
-        }
+            } // End of Column
+        } // End of else
 
         // Player name dialog
         if (state.showPlayerDialog && state.selectedPosition != null) {
@@ -411,7 +441,27 @@ fun LineupScreen(
                 )
             }
         }
-    }
+        } // End of Scaffold
+
+        // Done button for drawing mode - positioned at top right of screen (outside Scaffold)
+        if (state.drawingState.isDrawingMode) {
+            Button(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .systemBarsPadding()
+                    .padding(top = 8.dp, end = 6.dp),
+                onClick = { viewModel.exitDrawingMode() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = SecondaryGold,
+                    contentColor = GrassGreenDark
+                )
+            ) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(stringResource(R.string.btn_apply), fontWeight = FontWeight.Bold)
+            }
+        }
+    } // End of outer Box
 }
 
 @Preview(showBackground = true)
