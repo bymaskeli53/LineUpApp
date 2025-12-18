@@ -1,6 +1,7 @@
 package com.gundogar.lineupapp.ui.screens.lineup
 
 import android.app.Application
+import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import com.gundogar.lineupapp.data.model.Position
 import com.gundogar.lineupapp.data.model.TeamConfig
 import com.gundogar.lineupapp.data.repository.FormationRepository
 import com.gundogar.lineupapp.data.repository.SavedLineupRepository
+import com.gundogar.lineupapp.util.ImageStorageUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -142,25 +144,56 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun onPlayerSave(name: String, number: Int?, rating: Double?) {
+    fun onPlayerSave(
+        name: String,
+        number: Int?,
+        rating: Double?,
+        pendingImageUri: Uri?,
+        existingImagePath: String?
+    ) {
         val position = _state.value.selectedPosition ?: return
 
-        val player = Player(
-            positionId = position.id,
-            name = name,
-            number = number,
-            rating = rating
-        )
+        viewModelScope.launch {
+            // Handle image: copy new image or keep existing
+            val imageUri = when {
+                pendingImageUri != null -> {
+                    // Delete old image if being replaced
+                    val currentPlayer = _state.value.players[position.id]
+                    if (currentPlayer?.imageUri != null) {
+                        ImageStorageUtil.deleteImage(currentPlayer.imageUri)
+                    }
+                    // Copy new image to app storage
+                    ImageStorageUtil.copyImageToAppStorage(getApplication(), pendingImageUri)
+                }
+                existingImagePath != null -> existingImagePath
+                else -> {
+                    // Image was removed - delete old image
+                    val currentPlayer = _state.value.players[position.id]
+                    if (currentPlayer?.imageUri != null) {
+                        ImageStorageUtil.deleteImage(currentPlayer.imageUri)
+                    }
+                    null
+                }
+            }
 
-        _state.update { currentState ->
-            val updatedPlayers = currentState.players.toMutableMap()
-            updatedPlayers[position.id] = player
-
-            currentState.copy(
-                players = updatedPlayers,
-                selectedPosition = null,
-                showPlayerDialog = false
+            val player = Player(
+                positionId = position.id,
+                name = name,
+                number = number,
+                rating = rating,
+                imageUri = imageUri
             )
+
+            _state.update { currentState ->
+                val updatedPlayers = currentState.players.toMutableMap()
+                updatedPlayers[position.id] = player
+
+                currentState.copy(
+                    players = updatedPlayers,
+                    selectedPosition = null,
+                    showPlayerDialog = false
+                )
+            }
         }
     }
 

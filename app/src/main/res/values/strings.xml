@@ -38,6 +38,10 @@
     <string name="player_number_placeholder">1–99</string>
     <string name="player_rating">Player Rating</string>
     <string name="player_tap_to_add">Tap to add</string>
+    <string name="player_add_photo">Add Photo</string>
+    <string name="player_change_photo">Change Photo</string>
+    <string name="player_remove_photo">Remove</string>
+    <string name="cd_player_photo">Player photo</string>
 
     <!-- Positions -->
     <string name="position_goalkeeper">Goalkeeper</string>

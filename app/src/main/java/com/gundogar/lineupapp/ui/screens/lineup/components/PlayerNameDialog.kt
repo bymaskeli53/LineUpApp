@@ -1,19 +1,30 @@
 package com.gundogar.lineupapp.ui.screens.lineup.components
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -30,20 +41,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.Position
 import com.gundogar.lineupapp.data.model.PositionRole
-import com.gundogar.lineupapp.ui.theme.GrassGreen
 import com.gundogar.lineupapp.ui.theme.LineUpAppTheme
 import com.gundogar.lineupapp.ui.theme.SecondaryGold
+import java.io.File
 
 @Composable
 fun PlayerNameDialog(
@@ -51,13 +64,26 @@ fun PlayerNameDialog(
     currentName: String,
     currentNumber: Int?,
     currentRating: Double?,
+    currentImageUri: String?,
     onDismiss: () -> Unit,
-    onConfirm: (name: String, number: Int?, rating: Double?) -> Unit
+    onConfirm: (name: String, number: Int?, rating: Double?, pendingImageUri: Uri?, existingImagePath: String?) -> Unit
 ) {
     var name by remember { mutableStateOf(currentName) }
     var numberText by remember { mutableStateOf(currentNumber?.toString() ?: "") }
     var rating by remember { mutableFloatStateOf((currentRating ?: 7.5).toFloat()) }
     var ratingEnabled by remember { mutableStateOf(currentRating != null) }
+    var selectedImageUri by remember { mutableStateOf(currentImageUri) }
+    var pendingImageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageRemoved by remember { mutableStateOf(false) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let {
+            pendingImageUri = it
+            imageRemoved = false
+        }
+    }
 
     val positionName = getPositionNameString(position.role)
 
@@ -80,6 +106,101 @@ fun PlayerNameDialog(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // Player Photo Section
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        // Image preview or placeholder
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .border(2.dp, SecondaryGold, CircleShape)
+                                .clickable {
+                                    photoPickerLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            when {
+                                pendingImageUri != null -> {
+                                    AsyncImage(
+                                        model = pendingImageUri,
+                                        contentDescription = stringResource(R.string.cd_player_photo),
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(CircleShape)
+                                    )
+                                }
+                                selectedImageUri != null && !imageRemoved -> {
+                                    AsyncImage(
+                                        model = File(selectedImageUri!!),
+                                        contentDescription = stringResource(R.string.cd_player_photo),
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(CircleShape)
+                                    )
+                                }
+                                else -> {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = stringResource(R.string.player_add_photo),
+                                        modifier = Modifier.size(36.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Add/Change/Remove photo buttons
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TextButton(
+                                onClick = {
+                                    photoPickerLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(
+                                        if (selectedImageUri != null && !imageRemoved || pendingImageUri != null)
+                                            R.string.player_change_photo
+                                        else
+                                            R.string.player_add_photo
+                                    ),
+                                    color = SecondaryGold,
+                                    fontSize = 12.sp
+                                )
+                            }
+
+                            if ((selectedImageUri != null && !imageRemoved) || pendingImageUri != null) {
+                                TextButton(
+                                    onClick = {
+                                        pendingImageUri = null
+                                        imageRemoved = true
+                                    }
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.player_remove_photo),
+                                        color = MaterialTheme.colorScheme.error,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
 
                 OutlinedTextField(
                     value = name,
@@ -180,7 +301,8 @@ fun PlayerNameDialog(
                 onClick = {
                     val number = numberText.toIntOrNull()?.takeIf { it in 1..99 }
                     val finalRating = if (ratingEnabled) rating.toDouble() else null
-                    onConfirm(name.trim(), number, finalRating)
+                    val existingPath = if (imageRemoved) null else selectedImageUri
+                    onConfirm(name.trim(), number, finalRating, pendingImageUri, existingPath)
                 }
             ) {
                 Text(
@@ -253,8 +375,9 @@ private fun PlayerNameDialogPreview() {
             currentName = "Ronaldo",
             currentNumber = 10,
             currentRating = 9.3,
+            currentImageUri = null,
             onDismiss = {},
-            onConfirm = { _, _, _ -> }
+            onConfirm = { _, _, _, _, _ -> }
         )
     }
 }

@@ -65,6 +65,15 @@ fun PlayerJersey(
             .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Player image - displayed above jersey
+        player?.imageUri?.let { imagePath ->
+            PlayerImage(
+                imagePath = imagePath,
+                size = 28.dp,
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
+        }
+
         // Jersey with rating badge
         Box {
             JerseyIcon(

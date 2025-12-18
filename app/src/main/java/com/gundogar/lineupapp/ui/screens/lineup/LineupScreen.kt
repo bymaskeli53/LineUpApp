@@ -413,18 +413,21 @@ fun LineupScreen(
         } // End of else
 
         // Player name dialog
-        if (state.showPlayerDialog && state.selectedPosition != null) {
-            val currentPlayer = state.players[state.selectedPosition!!.id]
-            PlayerNameDialog(
-                position = state.selectedPosition!!,
-                currentName = currentPlayer?.name ?: "",
-                currentNumber = currentPlayer?.number,
-                currentRating = currentPlayer?.rating,
-                onDismiss = { viewModel.onPlayerDialogDismiss() },
-                onConfirm = { name, number, rating ->
-                    viewModel.onPlayerSave(name, number, rating)
-                }
-            )
+        if (state.showPlayerDialog) {
+            state.selectedPosition?.let { selectedPosition ->
+                val currentPlayer = state.players[selectedPosition.id]
+                PlayerNameDialog(
+                    position = selectedPosition,
+                    currentName = currentPlayer?.name ?: "",
+                    currentNumber = currentPlayer?.number,
+                    currentRating = currentPlayer?.rating,
+                    currentImageUri = currentPlayer?.imageUri,
+                    onDismiss = { viewModel.onPlayerDialogDismiss() },
+                    onConfirm = { name, number, rating, pendingImageUri, existingImagePath ->
+                        viewModel.onPlayerSave(name, number, rating, pendingImageUri, existingImagePath)
+                    }
+                )
+            }
         }
 
         // Team customization bottom sheet

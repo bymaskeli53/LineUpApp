@@ -38,6 +38,10 @@
     <string name="player_number_placeholder">1–99</string>
     <string name="player_rating">Oyuncu Puanı</string>
     <string name="player_tap_to_add">Eklemek için dokun</string>
+    <string name="player_add_photo">Fotoğraf Ekle</string>
+    <string name="player_change_photo">Fotoğrafı Değiştir</string>
+    <string name="player_remove_photo">Kaldır</string>
+    <string name="cd_player_photo">Oyuncu fotoğrafı</string>
 
     <!-- Positions -->
     <string name="position_goalkeeper">Kaleci</string>
