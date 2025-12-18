@@ -18,14 +18,15 @@ import com.gundogar.lineupapp.data.preferences.OnboardingPreferences
 import com.gundogar.lineupapp.ui.screens.formation.FormationSelectionScreen
 import com.gundogar.lineupapp.ui.screens.lineup.LineupScreen
 import com.gundogar.lineupapp.ui.screens.onboarding.OnboardingScreen
+import com.gundogar.lineupapp.ui.screens.pitches.NearbyPitchesScreen
 import com.gundogar.lineupapp.ui.screens.saved.SavedLineupsScreen
 import com.gundogar.lineupapp.ui.screens.teamsize.TeamSizeSelectionScreen
 import kotlinx.coroutines.launch
 
 @Composable
 fun LineUpNavGraph(
-    startDestination: String = Screen.TeamSizeSelection.route,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController,
+    startDestination: String = Screen.TeamSizeSelection.route
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -135,19 +136,13 @@ fun LineUpNavGraph(
         composable(
             route = Screen.SavedLineups.route,
             enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
+                fadeIn(animationSpec = tween(300))
             },
             exitTransition = {
                 fadeOut(animationSpec = tween(300))
             },
             popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
+                fadeOut(animationSpec = tween(300))
             }
         ) {
             SavedLineupsScreen(
@@ -164,6 +159,19 @@ fun LineUpNavGraph(
                     navController.navigate(Screen.Lineup.createRoute("saved", lineupId))
                 }
             )
+        }
+
+        // Nearby Pitches Screen
+        composable(
+            route = Screen.NearbyPitches.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            NearbyPitchesScreen()
         }
 
         // Lineup Screen (for both new and editing saved lineups)

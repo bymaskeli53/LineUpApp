@@ -120,4 +120,21 @@
     <string name="onboarding_tactics_description">Oyunları ve stratejileri göstermek için oklar, çizgiler ve şekiller kullanın. Çeşitli renkler ve kalınlıklar oyun planınızı net bir şekilde iletmenize yardımcı olur.</string>
     <string name="onboarding_share_title">Paylaş ve Kaydet</string>
     <string name="onboarding_share_description">Kadrolarınızı ileride kullanmak üzere kaydedin ve takımınızla paylaşın. Forma renklerini ve stillerini takımınızın kimliğine göre özelleştirin.</string>
+
+    <!-- Navigation -->
+    <string name="nav_create">Oluştur</string>
+    <string name="nav_saved">Kayıtlı</string>
+    <string name="nav_pitches">Sahalar</string>
+
+    <!-- Nearby Pitches -->
+    <string name="screen_title_nearby_pitches">Yakındaki Sahalar</string>
+    <string name="tab_list">Liste</string>
+    <string name="tab_map">Harita</string>
+    <string name="pitches_empty">Yakında futbol sahası bulunamadı</string>
+    <string name="pitches_error_location">Konum alınamadı</string>
+    <string name="pitches_error_fetch">Yakındaki sahalar yüklenemedi</string>
+    <string name="permission_location_title">Konum İzni Gerekli</string>
+    <string name="permission_location_description">Yakındaki futbol sahalarını bulmak için konumunuza erişmemiz gerekiyor. Konumunuz sadece yakındaki sahaları aramak için kullanılır ve saklanmaz veya paylaşılmaz.</string>
+    <string name="permission_grant">İzin Ver</string>
+    <string name="btn_retry">Tekrar Dene</string>
 </resources>

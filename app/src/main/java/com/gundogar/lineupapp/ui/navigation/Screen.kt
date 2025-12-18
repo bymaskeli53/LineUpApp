@@ -8,6 +8,8 @@ sealed class Screen(val route: String) {
 
     object SavedLineups : Screen("saved_lineups")
 
+    object NearbyPitches : Screen("nearby_pitches")
+
     object Lineup : Screen("lineup/{formationId}?lineupId={lineupId}&playerCount={playerCount}") {
         fun createRoute(
             formationId: String,

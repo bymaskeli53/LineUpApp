@@ -120,4 +120,21 @@
     <string name="onboarding_tactics_description">Use arrows, lines, and shapes to illustrate plays and strategies. Multiple colors and stroke widths help communicate your game plan clearly.</string>
     <string name="onboarding_share_title">Share &amp; Save</string>
     <string name="onboarding_share_description">Save your lineups for future reference and share them with your team. Customize jersey colors and styles to match your team\'s identity.</string>
+
+    <!-- Navigation -->
+    <string name="nav_create">Create</string>
+    <string name="nav_saved">Saved</string>
+    <string name="nav_pitches">Pitches</string>
+
+    <!-- Nearby Pitches -->
+    <string name="screen_title_nearby_pitches">Nearby Pitches</string>
+    <string name="tab_list">List</string>
+    <string name="tab_map">Map</string>
+    <string name="pitches_empty">No football pitches found nearby</string>
+    <string name="pitches_error_location">Unable to get current location</string>
+    <string name="pitches_error_fetch">Failed to fetch nearby pitches</string>
+    <string name="permission_location_title">Location Permission Required</string>
+    <string name="permission_location_description">To find nearby football pitches, we need access to your location. Your location is only used to search for pitches nearby and is not stored or shared.</string>
+    <string name="permission_grant">Grant Permission</string>
+    <string name="btn_retry">Retry</string>
 </resources>
