@@ -72,7 +72,7 @@ fun DraggablePlayerJersey(
 
     val jerseySize = 44.dp
 
-    Column(
+    Box(
         modifier = modifier
             .offset { IntOffset(dragOffsetX.roundToInt(), dragOffsetY.roundToInt()) }
             .scale(scale)
@@ -121,61 +121,68 @@ fun DraggablePlayerJersey(
                 )
             }
             .padding(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.TopCenter
     ) {
-        // Player image - displayed above jersey
+        // Main content: Jersey + Name (this is the anchor, position doesn't change)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Jersey with rating badge
+            Box {
+                JerseyIcon(
+                    primaryColor = teamConfig.primaryColor,
+                    secondaryColor = teamConfig.secondaryColor,
+                    style = teamConfig.jerseyStyle,
+                    number = player?.number,
+                    modifier = Modifier.size(jerseySize)
+                )
+
+                // Rating badge - positioned at top-right of jersey
+                player?.rating?.let { rating ->
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 8.dp, y = (-4).dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(getRatingColor(rating))
+                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = formatRating(rating),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            Text(
+                text = player?.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.player_tap_to_add),
+                color = Color.White,
+                fontSize = 12.sp,
+                fontWeight = if (player?.name?.isNotBlank() == true) FontWeight.Medium else FontWeight.Normal,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .widthIn(max = 70.dp)
+                    .padding(top = 2.dp)
+            )
+        }
+
+        // Player image - positioned above jersey without affecting layout
         player?.imageUri?.let { imagePath ->
             PlayerImage(
                 imagePath = imagePath,
                 size = 28.dp,
-                modifier = Modifier.padding(bottom = 2.dp)
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .offset(y = (-26).dp)
             )
         }
-
-        // Jersey with rating badge
-        Box {
-            JerseyIcon(
-                primaryColor = teamConfig.primaryColor,
-                secondaryColor = teamConfig.secondaryColor,
-                style = teamConfig.jerseyStyle,
-                number = player?.number,
-                modifier = Modifier.size(jerseySize)
-            )
-
-            // Rating badge - positioned at top-right of jersey
-            player?.rating?.let { rating ->
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 8.dp, y = (-4).dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(getRatingColor(rating))
-                        .padding(horizontal = 4.dp, vertical = 2.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = formatRating(rating),
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 10.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-        }
-
-        Text(
-            text = player?.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.player_tap_to_add),
-            color = Color.White,
-            fontSize = 12.sp,
-            fontWeight = if (player?.name?.isNotBlank() == true) FontWeight.Medium else FontWeight.Normal,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .widthIn(max = 70.dp)
-                .padding(top = 2.dp)
-        )
     }
 }
 
