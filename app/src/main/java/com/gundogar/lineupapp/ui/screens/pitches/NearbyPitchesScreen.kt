@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
@@ -121,7 +122,8 @@ fun NearbyPitchesScreen(
                     1 -> PitchMapView(
                         pitches = state.pitches,
                         userLocation = state.userLocation,
-                        isLoading = state.isLoading
+                        isLoading = state.isLoading,
+                        modifier = Modifier.fillMaxWidth().weight(1f)
                     )
                 }
             }

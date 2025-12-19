@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.gundogar.lineupapp.data.model.FootballPitch
@@ -23,7 +24,8 @@ import org.osmdroid.views.overlay.Marker
 fun PitchMapView(
     pitches: List<FootballPitch>,
     userLocation: Location?,
-    isLoading: Boolean
+    isLoading: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
@@ -47,7 +49,11 @@ fun PitchMapView(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clipToBounds()
+    ) {
         AndroidView(
             factory = { mapView },
             update = { map ->
@@ -56,7 +62,7 @@ fun PitchMapView(
                 // Center on user location if available
                 userLocation?.let { loc ->
                     map.controller.setZoom(16.0)
-                    map.controller.setCenter(GeoPoint(loc.latitude,loc.longitude))
+                    map.controller.setCenter(GeoPoint(loc.latitude, loc.longitude))
 
                     // Add user location marker
                     val userMarker = Marker(map).apply {
@@ -87,7 +93,9 @@ fun PitchMapView(
 
                 map.invalidate()
             },
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .clipToBounds()
         )
 
         if (isLoading) {
