@@ -137,4 +137,6 @@
     <string name="permission_location_description">To find nearby football pitches, we need access to your location. Your location is only used to search for pitches nearby and is not stored or shared.</string>
     <string name="permission_grant">Grant Permission</string>
     <string name="btn_retry">Retry</string>
+    <string name="your_location">📍 Your Location</string>
+    <string name="your_location_without_icon">Your Location</string>
 </resources>

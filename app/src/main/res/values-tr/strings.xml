@@ -137,4 +137,6 @@
     <string name="permission_location_description">Yakındaki futbol sahalarını bulmak için konumunuza erişmemiz gerekiyor. Konumunuz sadece yakındaki sahaları aramak için kullanılır ve saklanmaz veya paylaşılmaz.</string>
     <string name="permission_grant">İzin Ver</string>
     <string name="btn_retry">Tekrar Dene</string>
+    <string name="your_location">📍 Konumunuz</string>
+    <string name="your_location_without_icon">Konumunuz</string>
 </resources>
