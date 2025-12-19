@@ -71,7 +71,7 @@
 
     <!-- Saved Lineups -->
     <string name="saved_lineups_empty_title">Kayıtlı Kadro Yok</string>
-    <string name="saved_lineups_empty_subtitle">Aşağıdaki + butonuna dokunarak ilk kadronuzu oluşturun</string>
+    <string name="saved_lineups_empty_subtitle">Oluştur kısmından kadrolarınızı oluşturup buraya kaydedebilirsiniz</string>
     <string name="saved_lineups_delete_title">Kadro silinsin mi?</string>
     <string name="saved_lineups_delete_message">\"%s\" kadrosunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
     <string name="saved_lineups_players_format">%d oyuncu</string>

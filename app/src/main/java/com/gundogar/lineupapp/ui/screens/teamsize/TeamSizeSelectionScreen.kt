@@ -91,15 +91,6 @@ fun TeamSizeSelectionScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
-                actions = {
-                    IconButton(onClick = onViewSavedLineups) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.List,
-                            contentDescription = stringResource(R.string.cd_my_lineups),
-                            tint = SecondaryGold
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = GrassGreenDark,
                     titleContentColor = Color.White
@@ -114,7 +105,8 @@ fun TeamSizeSelectionScreen(
                 ExtendedFloatingActionButton(
                     onClick = { onTeamSizeSelected(selectedSize) },
                     containerColor = SecondaryGold,
-                    contentColor = GrassGreenDark
+                    contentColor = GrassGreenDark,
+                    modifier = Modifier.padding(bottom = 80.dp)
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                     Spacer(Modifier.width(8.dp))

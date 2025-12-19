@@ -71,7 +71,7 @@
 
     <!-- Saved Lineups -->
     <string name="saved_lineups_empty_title">No Saved Lineups</string>
-    <string name="saved_lineups_empty_subtitle">Create your first lineup by tapping the + button below</string>
+    <string name="saved_lineups_empty_subtitle">You can create your line ups from create on bottom</string>
     <string name="saved_lineups_delete_title">Delete Lineup?</string>
     <string name="saved_lineups_delete_message">Are you sure you want to delete \"%s\"? This action cannot be undone.</string>
     <string name="saved_lineups_players_format">%d players</string>
