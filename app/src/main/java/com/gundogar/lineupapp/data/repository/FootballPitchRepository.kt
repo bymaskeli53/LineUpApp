@@ -35,10 +35,16 @@ class FootballPitchRepository(
             // Fetch from API
             val response = api.searchFootballPitches(query)
 
-            // Map to entities and cache
+            // Map to entities and cache, filtering out private/restricted access
             val pitchEntities = response.elements.mapNotNull { element ->
                 val lat = element.lat ?: element.center?.lat ?: return@mapNotNull null
                 val lon = element.lon ?: element.center?.lon ?: return@mapNotNull null
+
+                // Filter out private access pitches
+                val access = element.tags?.get("access")?.lowercase()
+                if (access in listOf("private", "no", "military", "customers")) {
+                    return@mapNotNull null
+                }
 
                 FootballPitchEntity(
                     id = element.id,
@@ -76,10 +82,21 @@ class FootballPitchRepository(
         return """
             [out:json][timeout:25];
             (
-              node["leisure"="pitch"]["sport"="soccer"](around:$radius,$lat,$lon);
-              way["leisure"="pitch"]["sport"="soccer"](around:$radius,$lat,$lon);
-              node["leisure"="pitch"]["sport"="football"](around:$radius,$lat,$lon);
-              way["leisure"="pitch"]["sport"="football"](around:$radius,$lat,$lon);
+              // Artificial turf football pitches (halı saha)
+              node["leisure"="pitch"]["sport"~"soccer|football"]["surface"~"artificial_turf|astroturf|synthetic|carpet"](around:$radius,$lat,$lon);
+              way["leisure"="pitch"]["sport"~"soccer|football"]["surface"~"artificial_turf|astroturf|synthetic|carpet"](around:$radius,$lat,$lon);
+
+              // Sports centers with football facilities (typically commercial halı saha)
+              node["leisure"="sports_centre"]["sport"~"soccer|football|multi"](around:$radius,$lat,$lon);
+              way["leisure"="sports_centre"]["sport"~"soccer|football|multi"](around:$radius,$lat,$lon);
+
+              // Pitches with "halı" or "hali" in name (Turkish term for artificial turf pitch)
+              node["leisure"="pitch"]["name"~"[Hh]al[ıi]",i](around:$radius,$lat,$lon);
+              way["leisure"="pitch"]["name"~"[Hh]al[ıi]",i](around:$radius,$lat,$lon);
+
+              // Fee-based football pitches (commercial facilities)
+              node["leisure"="pitch"]["sport"~"soccer|football"]["fee"="yes"](around:$radius,$lat,$lon);
+              way["leisure"="pitch"]["sport"~"soccer|football"]["fee"="yes"](around:$radius,$lat,$lon);
             );
             out center;
         """.trimIndent()
