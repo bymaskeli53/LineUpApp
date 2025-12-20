@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -228,9 +229,15 @@ fun LineUpNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onLineupSaved = {
                     navController.navigate(Screen.SavedLineups.route) {
-                        popUpTo(Screen.TeamSizeSelection.route)
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                        restoreState = false
                     }
                 }
+
+
             )
         }
 

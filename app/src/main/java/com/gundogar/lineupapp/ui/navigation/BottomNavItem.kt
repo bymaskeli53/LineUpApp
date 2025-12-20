@@ -6,6 +6,11 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.RecentActors
+import androidx.compose.material.icons.filled.Scoreboard
+import androidx.compose.material.icons.filled.Stadium
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.gundogar.lineupapp.R
 
@@ -23,13 +28,13 @@ sealed class BottomNavItem(
     data object SavedLineups : BottomNavItem(
         route = Screen.SavedLineups.route,
         titleResId = R.string.nav_saved,
-        icon = Icons.Default.List
+        icon = Icons.Default.Groups
     )
 
     data object Matches : BottomNavItem(
         route = Screen.MatchList.route,
         titleResId = R.string.nav_matches,
-        icon = Icons.Default.DateRange
+        icon = Icons.Default.Scoreboard
     )
 
     data object Tournaments : BottomNavItem(
@@ -41,6 +46,6 @@ sealed class BottomNavItem(
     data object NearbyPitches : BottomNavItem(
         route = Screen.NearbyPitches.route,
         titleResId = R.string.nav_pitches,
-        icon = Icons.Default.LocationOn
+        icon = Icons.Default.Stadium
     )
 }

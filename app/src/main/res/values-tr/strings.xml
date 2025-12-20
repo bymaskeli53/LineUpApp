@@ -123,7 +123,7 @@
 
     <!-- Navigation -->
     <string name="nav_create">Oluştur</string>
-    <string name="nav_saved">Kayıtlı</string>
+    <string name="nav_saved">Kadrolarım</string>
     <string name="nav_pitches">Sahalar</string>
     <string name="nav_matches">Maçlar</string>
     <string name="nav_tournaments">Turnuvalar</string>

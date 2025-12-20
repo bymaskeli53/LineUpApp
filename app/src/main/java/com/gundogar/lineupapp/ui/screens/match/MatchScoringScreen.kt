@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -401,7 +402,7 @@ private fun GoalItem(
         }
 
         Icon(
-            Icons.Default.Place,
+            Icons.Default.SportsSoccer,
             contentDescription = null,
             tint = if (isHomeGoal) SecondaryGold else Color.White,
             modifier = Modifier.size(20.dp)
