@@ -17,11 +17,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.FootballPitch
 import com.gundogar.lineupapp.ui.screens.pitches.components.PitchCard
@@ -76,7 +82,24 @@ fun PitchListView(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    val composition by rememberLottieComposition(
+                        // Eğer dosya adınız "animasyon.lottie" ise:
+                        LottieCompositionSpec.RawRes(R.raw.footballer)
+                    )
+
+                    val progress by animateLottieCompositionAsState(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever,
+                        isPlaying = true, // Bir state'e bağlanarak durdurulup başlatılabilir
+                        speed = 1.5f      // Animasyon hızı
+                    )
+
+                    LottieAnimation(
+                        composition = composition,
+                        progress = { progress },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                   // CircularProgressIndicator()
                 }
             }
             else -> {

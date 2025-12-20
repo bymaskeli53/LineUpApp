@@ -27,4 +27,18 @@ sealed class Screen(val route: String) {
             }
         }
     }
+
+    // Match screens
+    object MatchList : Screen("match_list")
+    object CreateMatch : Screen("create_match")
+    object MatchScoring : Screen("match_scoring/{matchId}") {
+        fun createRoute(matchId: Long): String = "match_scoring/$matchId"
+    }
+
+    // Tournament screens
+    object TournamentList : Screen("tournament_list")
+    object CreateTournament : Screen("create_tournament")
+    object TournamentDetail : Screen("tournament_detail/{tournamentId}") {
+        fun createRoute(tournamentId: Long): String = "tournament_detail/$tournamentId"
+    }
 }

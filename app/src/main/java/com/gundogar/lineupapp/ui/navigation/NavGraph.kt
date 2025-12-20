@@ -14,13 +14,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.gundogar.lineupapp.data.local.LineupDatabase
 import com.gundogar.lineupapp.data.preferences.OnboardingPreferences
 import com.gundogar.lineupapp.ui.screens.formation.FormationSelectionScreen
 import com.gundogar.lineupapp.ui.screens.lineup.LineupScreen
+import com.gundogar.lineupapp.ui.screens.match.CreateMatchScreen
+import com.gundogar.lineupapp.ui.screens.match.MatchListScreen
+import com.gundogar.lineupapp.ui.screens.match.MatchScoringScreen
+import com.gundogar.lineupapp.ui.screens.match.MatchScoringViewModel
 import com.gundogar.lineupapp.ui.screens.onboarding.OnboardingScreen
 import com.gundogar.lineupapp.ui.screens.pitches.NearbyPitchesScreen
 import com.gundogar.lineupapp.ui.screens.saved.SavedLineupsScreen
 import com.gundogar.lineupapp.ui.screens.teamsize.TeamSizeSelectionScreen
+import com.gundogar.lineupapp.ui.screens.tournament.CreateTournamentScreen
+import com.gundogar.lineupapp.ui.screens.tournament.TournamentDetailScreen
+import com.gundogar.lineupapp.ui.screens.tournament.TournamentDetailViewModel
+import com.gundogar.lineupapp.ui.screens.tournament.TournamentListScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -221,6 +230,161 @@ fun LineUpNavGraph(
                     navController.navigate(Screen.SavedLineups.route) {
                         popUpTo(Screen.TeamSizeSelection.route)
                     }
+                }
+            )
+        }
+
+        // Match List Screen
+        composable(
+            route = Screen.MatchList.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            MatchListScreen(
+                onCreateMatch = {
+                    navController.navigate(Screen.CreateMatch.route)
+                },
+                onMatchClick = { matchId ->
+                    navController.navigate(Screen.MatchScoring.createRoute(matchId))
+                }
+            )
+        }
+
+        // Create Match Screen
+        composable(
+            route = Screen.CreateMatch.route,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            CreateMatchScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onMatchCreated = { matchId ->
+                    navController.navigate(Screen.MatchScoring.createRoute(matchId)) {
+                        popUpTo(Screen.MatchList.route)
+                    }
+                }
+            )
+        }
+
+        // Match Scoring Screen
+        composable(
+            route = Screen.MatchScoring.route,
+            arguments = listOf(
+                navArgument("matchId") { type = NavType.LongType }
+            ),
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) { backStackEntry ->
+            val matchId = backStackEntry.arguments?.getLong("matchId") ?: return@composable
+            val application = context.applicationContext as android.app.Application
+            val viewModel = remember(matchId) {
+                MatchScoringViewModel(application, matchId)
+            }
+            MatchScoringScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Tournament List Screen
+        composable(
+            route = Screen.TournamentList.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            TournamentListScreen(
+                onCreateTournament = {
+                    navController.navigate(Screen.CreateTournament.route)
+                },
+                onTournamentClick = { tournamentId ->
+                    navController.navigate(Screen.TournamentDetail.createRoute(tournamentId))
+                }
+            )
+        }
+
+        // Create Tournament Screen
+        composable(
+            route = Screen.CreateTournament.route,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            CreateTournamentScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onTournamentCreated = { tournamentId ->
+                    navController.navigate(Screen.TournamentDetail.createRoute(tournamentId)) {
+                        popUpTo(Screen.TournamentList.route)
+                    }
+                }
+            )
+        }
+
+        // Tournament Detail Screen
+        composable(
+            route = Screen.TournamentDetail.route,
+            arguments = listOf(
+                navArgument("tournamentId") { type = NavType.LongType }
+            ),
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) { backStackEntry ->
+            val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: return@composable
+            val application = context.applicationContext as android.app.Application
+            val viewModel = remember(tournamentId) {
+                TournamentDetailViewModel(application, tournamentId)
+            }
+            TournamentDetailScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onMatchClick = { matchId ->
+                    navController.navigate(Screen.MatchScoring.createRoute(matchId))
                 }
             )
         }

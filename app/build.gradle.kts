@@ -82,6 +82,10 @@ dependencies {
     // Location Services
     implementation(libs.play.services.location)
 
+    // Lottie
+    implementation(libs.lottie.compose)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

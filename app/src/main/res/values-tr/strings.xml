@@ -125,6 +125,9 @@
     <string name="nav_create">Oluştur</string>
     <string name="nav_saved">Kayıtlı</string>
     <string name="nav_pitches">Sahalar</string>
+    <string name="nav_matches">Maçlar</string>
+    <string name="nav_tournaments">Turnuvalar</string>
+
 
     <!-- Nearby Pitches -->
     <string name="screen_title_nearby_pitches">Yakındaki Sahalar</string>
@@ -139,4 +142,83 @@
     <string name="btn_retry">Tekrar Dene</string>
     <string name="your_location">📍 Konumunuz</string>
     <string name="your_location_without_icon">Konumunuz</string>
+
+    <!-- Match Screens -->
+    <string name="screen_title_matches">Maçlar</string>
+    <string name="screen_title_create_match">Yeni Maç</string>
+    <string name="screen_title_match_scoring">Maç Skoru</string>
+
+    <string name="match_filter_all">Tümü</string>
+    <string name="match_filter_friendly">Hazırlık</string>
+    <string name="match_filter_tournament">Turnuva</string>
+
+    <string name="match_empty_title">Henüz Maç Yok</string>
+    <string name="match_empty_subtitle">Skor takibine başlamak için ilk maçınızı oluşturun</string>
+
+    <string name="match_home_team">Ev Sahibi</string>
+    <string name="match_away_team">Deplasman</string>
+    <string name="match_team_name_hint">Takım adı girin</string>
+
+    <string name="match_import_lineup">Kadrodan İçe Aktar</string>
+    <string name="match_create">Maç Oluştur</string>
+    <string name="match_complete">Maçı Bitir</string>
+
+    <string name="match_add_goal">Gol Ekle</string>
+    <string name="match_select_scorer">Golcü Seç</string>
+    <string name="match_no_draw_warning">Eleme maçları berabere bitemez. Daha fazla gol ekleyin!</string>
+
+    <string name="match_goal_minute">Dakika (isteğe bağlı)</string>
+    <string name="match_goals">Goller</string>
+    <string name="match_no_goals">Henüz gol yok</string>
+
+    <string name="match_vs">vs</string>
+    <string name="match_completed">Tamamlandı</string>
+    <string name="match_in_progress">Devam Ediyor</string>
+
+    <!-- Tournament Screens -->
+    <string name="screen_title_tournaments">Turnuvalar</string>
+    <string name="screen_title_create_tournament">Yeni Turnuva</string>
+    <string name="screen_title_tournament_detail">Turnuva</string>
+
+    <string name="tournament_empty_title">Henüz Turnuva Yok</string>
+    <string name="tournament_empty_subtitle">Başlamak için ilk turnuvanızı oluşturun</string>
+
+    <string name="tournament_name">Turnuva Adı</string>
+    <string name="tournament_name_hint">Turnuva adı girin</string>
+    <string name="tournament_team_count">Takım Sayısı</string>
+
+    <string name="tournament_create">Turnuva Oluştur</string>
+    <string name="tournament_add_team">Takım Ekle</string>
+    <string name="tournament_add_team_manual">Manuel Gir</string>
+    <string name="tournament_add_team_import">Kadrodan İçe Aktar</string>
+
+    <string name="tournament_start">Turnuvayı Başlat</string>
+    <string name="tournament_advance_round">Turu Geç</string>
+
+    <string name="tournament_tab_teams">Takımlar</string>
+    <string name="tournament_tab_bracket">Eşleşmeler</string>
+    <string name="tournament_tab_stats">İstatistikler</string>
+
+    <string name="tournament_teams_count" formatted="false">%d / %d takım</string>
+
+    <string name="tournament_status_setup">Kurulum</string>
+    <string name="tournament_status_in_progress">Devam Ediyor</string>
+    <string name="tournament_status_completed">Tamamlandı</string>
+
+    <string name="tournament_round_of_16">Son 16</string>
+    <string name="tournament_quarterfinals">Çeyrek Final</string>
+    <string name="tournament_semifinals">Yarı Final</string>
+    <string name="tournament_final">Final</string>
+
+    <string name="tournament_bye">Bay</string>
+    <string name="tournament_winner">Kazanan: %s</string>
+
+    <string name="tournament_golden_boot">Gol Kralı</string>
+    <string name="tournament_top_scorers">En Golcü Oyuncular</string>
+    <string name="tournament_goals_format">%d gol</string>
+
+    <string name="tournament_delete_title">Turnuva silinsin mi?</string>
+    <string name="tournament_delete_message">\"%s\" turnuvasını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
+
+
 </resources>

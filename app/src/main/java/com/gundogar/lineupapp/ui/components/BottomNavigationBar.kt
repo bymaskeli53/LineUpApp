@@ -20,6 +20,7 @@ fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.SavedLineups,
+        BottomNavItem.Matches,
         BottomNavItem.NearbyPitches
     )
 
@@ -62,6 +63,7 @@ fun shouldShowBottomNav(route: String?): Boolean {
     return route in listOf(
         BottomNavItem.Home.route,
         BottomNavItem.SavedLineups.route,
+        BottomNavItem.Matches.route,
         BottomNavItem.NearbyPitches.route
     )
 }
