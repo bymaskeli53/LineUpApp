@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
@@ -44,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -163,7 +166,7 @@ private fun TeamSizeCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .heightIn(min = 120.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected)
                 SecondaryGold.copy(alpha = 0.15f)
@@ -177,7 +180,7 @@ private fun TeamSizeCard(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -211,6 +214,19 @@ private fun TeamSizeCard(
     }
 }
 
+@Preview(name = "Card - Normal", fontScale = 1.0f)
+@Preview(name = "Card - Large Font", fontScale = 1.3f)
+@Preview(name = "Card - Huge Font", fontScale = 1.5f)
+@Preview(name = "Card - Narrow", widthDp = 150)
+
+@Preview(name = "Small Phone", widthDp = 320, heightDp = 568)
+@Preview(name = "Normal Phone", widthDp = 360, heightDp = 640)
+@Preview(name = "Large Phone", widthDp = 411, heightDp = 891)
+@Preview(name = "Tablet", widthDp = 800, heightDp = 1280)
+@Preview(name = "Phone", device = Devices.PIXEL_4)
+@Preview(name = "Phone Small", device = Devices.PIXEL_2)
+@Preview(name = "Tablet", device = Devices.PIXEL_TABLET)
+@Preview(name = "Foldable", device = Devices.FOLDABLE)
 @Preview(showBackground = true)
 @Composable
 private fun TeamSizeSelectionScreenPreview() {
