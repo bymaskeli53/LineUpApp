@@ -116,7 +116,8 @@ class TournamentRepository(
 
     /**
      * Generates tournament bracket with random pairing.
-     * Handles odd team counts by assigning byes.
+     * Handles non-power-of-2 team counts by assigning byes to first teams (after shuffle).
+     * Byes are assigned deterministically to ensure predictable bracket structure.
      */
     suspend fun generateBracket(tournamentId: Long): Boolean {
         val tournament = tournamentDao.getTournamentById(tournamentId) ?: return false
@@ -128,50 +129,62 @@ class TournamentRepository(
         val bracketSize = nextPowerOfTwo(teams.size)
         val byesNeeded = bracketSize - teams.size
 
-        // Shuffle teams randomly
-        val shuffledTeams = teams.shuffled(Random).toMutableList()
+        // Shuffle teams randomly for fair matchups
+        val shuffledTeams = teams.shuffled(Random)
 
         // Create matches
         val matches = mutableListOf<MatchEntity>()
         var matchNumber = 0
 
-        // Process teams in pairs
-        var teamIndex = 0
-        var byesAssigned = 0
-
-        while (teamIndex < shuffledTeams.size || byesAssigned < byesNeeded) {
-            val homeTeam = if (teamIndex < shuffledTeams.size) shuffledTeams[teamIndex++] else null
-            val awayTeam = when {
-                byesAssigned < byesNeeded && (teamIndex >= shuffledTeams.size || Random.nextBoolean()) -> {
-                    byesAssigned++
-                    null // Bye
-                }
-                teamIndex < shuffledTeams.size -> shuffledTeams[teamIndex++]
-                else -> {
-                    byesAssigned++
-                    null
-                }
-            }
-
-            if (homeTeam != null) {
-                val isBye = awayTeam == null
-                val match = MatchEntity(
-                    homeTeamName = homeTeam.teamName,
-                    awayTeamName = awayTeam?.teamName ?: "BYE",
-                    homeTeamConfigJson = homeTeam.teamConfigJson,
-                    awayTeamConfigJson = awayTeam?.teamConfigJson,
-                    homePlayersJson = homeTeam.playersJson,
-                    awayPlayersJson = awayTeam?.playersJson,
+        // First, create bye matches for the first 'byesNeeded' teams
+        // These teams automatically advance to the next round
+        for (i in 0 until byesNeeded) {
+            val team = shuffledTeams[i]
+            matches.add(
+                MatchEntity(
+                    homeTeamName = team.teamName,
+                    awayTeamName = "BYE",
+                    homeTeamConfigJson = team.teamConfigJson,
+                    awayTeamConfigJson = null,
+                    homePlayersJson = team.playersJson,
+                    awayPlayersJson = null,
                     tournamentId = tournamentId,
                     tournamentRound = startingRound.name,
                     matchNumber = matchNumber++,
-                    isBye = isBye,
-                    isCompleted = isBye,
-                    homeScore = if (isBye) 1 else 0,
+                    isBye = true,
+                    isCompleted = true,
+                    homeScore = 1,
                     awayScore = 0,
-                    playedAt = if (isBye) System.currentTimeMillis() else null
+                    playedAt = System.currentTimeMillis()
                 )
-                matches.add(match)
+            )
+        }
+
+        // Then, create regular matches for the remaining teams
+        val remainingTeams = shuffledTeams.drop(byesNeeded)
+        for (i in remainingTeams.indices step 2) {
+            val homeTeam = remainingTeams[i]
+            val awayTeam = remainingTeams.getOrNull(i + 1)
+
+            if (awayTeam != null) {
+                matches.add(
+                    MatchEntity(
+                        homeTeamName = homeTeam.teamName,
+                        awayTeamName = awayTeam.teamName,
+                        homeTeamConfigJson = homeTeam.teamConfigJson,
+                        awayTeamConfigJson = awayTeam.teamConfigJson,
+                        homePlayersJson = homeTeam.playersJson,
+                        awayPlayersJson = awayTeam.playersJson,
+                        tournamentId = tournamentId,
+                        tournamentRound = startingRound.name,
+                        matchNumber = matchNumber++,
+                        isBye = false,
+                        isCompleted = false,
+                        homeScore = 0,
+                        awayScore = 0,
+                        playedAt = null
+                    )
+                )
             }
         }
 
@@ -191,6 +204,7 @@ class TournamentRepository(
 
     /**
      * Advances tournament to next round if all matches in current round are complete.
+     * Returns false if any match ended in a draw (tournaments require definitive winners).
      */
     suspend fun advanceToNextRound(tournamentId: Long): Boolean {
         val tournament = tournamentDao.getTournamentById(tournamentId) ?: return false
@@ -201,6 +215,11 @@ class TournamentRepository(
 
         // Check if all matches complete
         if (currentMatches.any { !it.isCompleted }) {
+            return false
+        }
+
+        // Check for draws - tournament matches must have a winner
+        if (currentMatches.any { !it.isBye && it.homeScore == it.awayScore }) {
             return false
         }
 
@@ -277,6 +296,9 @@ class TournamentRepository(
             .firstOrNull()
 
         if (finalMatch?.isCompleted != true) return false
+
+        // Final must have a definitive winner (no draws)
+        if (finalMatch.homeScore == finalMatch.awayScore) return false
 
         val winnerName = if (finalMatch.homeScore > finalMatch.awayScore) {
             finalMatch.homeTeamName

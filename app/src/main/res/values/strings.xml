@@ -186,6 +186,19 @@
     <string name="tournament_goals_format">%d goals</string>
     <string name="tournament_delete_title">Delete Tournament?</string>
     <string name="tournament_delete_message">Are you sure you want to delete \"%s\"? This action cannot be undone.</string>
+    <string name="tournament_error_not_found">Tournament not found</string>
+    <string name="tournament_error_load_failed">Failed to load tournament</string>
+    <string name="tournament_draws_warning">Draws must be resolved before advancing. Edit match scores to determine winners.</string>
+    <string name="tournament_need_teams">Add %d more team(s) to start the tournament</string>
+    <string name="tournament_completed">TOURNAMENT COMPLETED</string>
+    <string name="tournament_bracket_empty">Start the tournament to see the bracket</string>
+    <string name="tournament_no_goals">No goals scored yet</string>
+    <string name="tournament_players_count">%d players</string>
+    <string name="tournament_round_fallback">Round</string>
+
+    <!-- Common -->
+    <string name="loading">Loading…</string>
+    <string name="btn_go_back">Go Back</string>
 
     <!-- Nearby Pitches -->
     <string name="screen_title_nearby_pitches">Nearby Pitches</string>
@@ -200,4 +213,5 @@
     <string name="btn_retry">Retry</string>
     <string name="your_location">📍 Your Location</string>
     <string name="your_location_without_icon">Your Location</string>
+    <string name="curren_status">Current Status</string>
 </resources>

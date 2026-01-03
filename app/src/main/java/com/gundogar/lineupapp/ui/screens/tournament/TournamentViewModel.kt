@@ -34,9 +34,11 @@ data class TournamentDetailState(
     val topScorers: List<PlayerStatistics> = emptyList(),
     val selectedTab: Int = 0,
     val isLoading: Boolean = false,
+    val error: String? = null,
     val showAddTeamDialog: Boolean = false,
     val canStart: Boolean = false,
-    val canAdvance: Boolean = false
+    val canAdvance: Boolean = false,
+    val hasDraws: Boolean = false
 )
 
 class TournamentListViewModel(application: Application) : AndroidViewModel(application) {
@@ -126,32 +128,45 @@ class TournamentDetailViewModel(
 
     fun loadTournament() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            val tournament = tournamentRepository.getTournamentById(tournamentId)
-            val topScorers = if (tournament != null && tournament.status != TournamentStatus.SETUP) {
-                tournamentRepository.getTopScorers(tournamentId)
-            } else {
-                emptyList()
-            }
+            _state.update { it.copy(isLoading = true, error = null) }
+            try {
+                val tournament = tournamentRepository.getTournamentById(tournamentId)
 
-            val canStart = tournament?.let {
-                it.status == TournamentStatus.SETUP && it.teams.size >= 2
-            } ?: false
+                if (tournament == null) {
+                    _state.update { it.copy(isLoading = false, error = "Tournament not found") }
+                    return@launch
+                }
 
-            val canAdvance = tournament?.let {
-                it.status == TournamentStatus.IN_PROGRESS &&
-                        it.matches.filter { m -> m.tournamentRound == it.currentRound }
-                            .all { m -> m.isCompleted }
-            } ?: false
+                val topScorers = if (tournament.status != TournamentStatus.SETUP) {
+                    tournamentRepository.getTopScorers(tournamentId)
+                } else {
+                    emptyList()
+                }
 
-            _state.update {
-                it.copy(
-                    tournament = tournament,
-                    topScorers = topScorers,
-                    isLoading = false,
-                    canStart = canStart,
-                    canAdvance = canAdvance
-                )
+                val activeTeams = tournament.teams.filter { !it.isEliminated }
+                val canStart = tournament.status == TournamentStatus.SETUP && activeTeams.size >= 2
+
+                val currentRoundMatches = tournament.matches.filter { m -> m.tournamentRound == tournament.currentRound }
+                val hasDraws = tournament.status == TournamentStatus.IN_PROGRESS &&
+                        currentRoundMatches.any { m -> m.isCompleted && !m.isBye && m.homeScore == m.awayScore }
+
+                val canAdvance = tournament.status == TournamentStatus.IN_PROGRESS &&
+                        currentRoundMatches.all { m -> m.isCompleted } &&
+                        !hasDraws
+
+                _state.update {
+                    it.copy(
+                        tournament = tournament,
+                        topScorers = topScorers,
+                        isLoading = false,
+                        error = null,
+                        canStart = canStart,
+                        canAdvance = canAdvance,
+                        hasDraws = hasDraws
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = "Failed to load tournament") }
             }
         }
     }

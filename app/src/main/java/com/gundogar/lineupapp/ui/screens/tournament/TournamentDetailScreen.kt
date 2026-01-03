@@ -24,17 +24,22 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
@@ -48,11 +53,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.Match
 import com.gundogar.lineupapp.data.model.PlayerStatistics
@@ -88,99 +95,185 @@ fun TournamentDetailScreen(
             )
         }
     ) { paddingValues ->
-        if (tournament == null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(GrassGreenDark)
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Loading...", color = Color.White)
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(GrassGreenDark)
-                    .padding(paddingValues)
-            ) {
-                // Status header
-                StatusHeader(
-                    status = tournament.status,
-                    currentRound = tournament.currentRound.displayName,
-                    winnerName = tournament.winnerName
-                )
-
-                // Tabs
-                val tabs = listOf(
-                    stringResource(R.string.tournament_tab_teams),
-                    stringResource(R.string.tournament_tab_bracket),
-                    stringResource(R.string.tournament_tab_stats)
-                )
-
-                TabRow(
-                    selectedTabIndex = state.selectedTab,
-                    containerColor = GrassGreenDark,
-                    contentColor = Color.White,
-                    indicator = { tabPositions ->
-                        SecondaryIndicator(
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[state.selectedTab]),
-                            color = SecondaryGold
-                        )
-                    }
+        when {
+            state.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(GrassGreenDark)
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
                 ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = state.selectedTab == index,
-                            onClick = { viewModel.setSelectedTab(index) },
-                            text = {
+                    Text(stringResource(R.string.loading), color = Color.White)
+                }
+            }
+            state.error != null -> {
+                val errorMessage = state.error ?: ""
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(GrassGreenDark)
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = errorMessage,
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = onNavigateBack,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SecondaryGold,
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Text(stringResource(R.string.btn_go_back))
+                        }
+                    }
+                }
+            }
+            tournament == null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(GrassGreenDark)
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(stringResource(R.string.tournament_error_not_found), color = Color.White)
+                }
+            }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(GrassGreenDark)
+                        .padding(paddingValues)
+                ) {
+                    // Status header
+                    StatusHeader(
+                        status = tournament.status,
+                        currentRound = tournament.currentRound,
+                        winnerName = tournament.winnerName
+                    )
+
+                    // Tabs
+                    val tabs = listOf(
+                        stringResource(R.string.tournament_tab_teams),
+                        stringResource(R.string.tournament_tab_bracket),
+                        stringResource(R.string.tournament_tab_stats)
+                    )
+
+                    TabRow(
+                        selectedTabIndex = state.selectedTab,
+                        containerColor = GrassGreenDark,
+                        contentColor = Color.White,
+                        indicator = { tabPositions ->
+                            SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[state.selectedTab]),
+                                color = SecondaryGold
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = state.selectedTab == index,
+                                onClick = { viewModel.setSelectedTab(index) },
+                                text = {
+                                    Text(
+                                        text = title,
+                                        color = if (state.selectedTab == index) SecondaryGold else Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    // Tab content - wrap in Box with weight to leave room for buttons
+                    Box(modifier = Modifier.weight(1f)) {
+                        when (state.selectedTab) {
+                            0 -> TeamsTab(
+                                teams = tournament.teams,
+                                canAddTeam = tournament.status == TournamentStatus.SETUP && tournament.teams.size < tournament.teamCount,
+                                canRemoveTeam = tournament.status == TournamentStatus.SETUP,
+                                onAddTeam = { viewModel.showAddTeamDialog() },
+                                onRemoveTeam = { viewModel.removeTeam(it) }
+                            )
+                            1 -> BracketTab(
+                                matches = tournament.matches,
+                                currentRound = tournament.currentRound,
+                                onMatchClick = onMatchClick
+                            )
+                            2 -> StatsTab(topScorers = state.topScorers)
+                        }
+                    }
+
+                    // Draws warning
+                    if (state.hasDraws) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFFF9800).copy(alpha = 0.2f)
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.tournament_draws_warning),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFFFF9800),
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
+                    }
+
+                    // Action buttons - compute canStart directly from tournament data
+                    val activeTeams = tournament.teams.filter { !it.isEliminated }
+                    val canStartTournament = tournament.status == TournamentStatus.SETUP && activeTeams.size >= 2
+
+                    if (canStartTournament) {
+                        ActionButton(
+                            text = stringResource(R.string.tournament_start),
+                            icon = Icons.Default.PlayArrow,
+                            onClick = { viewModel.startTournament() }
+                        )
+                    } else if (tournament.status == TournamentStatus.SETUP) {
+                        // Show hint when not enough teams
+                        val teamsNeeded = 2 - activeTeams.size
+                        if (teamsNeeded > 0) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(alpha = 0.1f)
+                                )
+                            ) {
                                 Text(
-                                    text = title,
-                                    color = if (state.selectedTab == index) SecondaryGold else Color.White.copy(alpha = 0.7f)
+                                    text = stringResource(R.string.tournament_need_teams, teamsNeeded),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    modifier = Modifier.padding(12.dp)
                                 )
                             }
+                        }
+                    }
+
+                    if (state.canAdvance) {
+                        ActionButton(
+                            text = stringResource(R.string.tournament_advance_round),
+                            icon = Icons.Default.ArrowForward,
+                            onClick = { viewModel.advanceRound() }
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(100.dp))
                 }
-
-                // Tab content
-                when (state.selectedTab) {
-                    0 -> TeamsTab(
-                        teams = tournament.teams,
-                        canAddTeam = tournament.status == TournamentStatus.SETUP && tournament.teams.size < tournament.teamCount,
-                        canRemoveTeam = tournament.status == TournamentStatus.SETUP,
-                        onAddTeam = { viewModel.showAddTeamDialog() },
-                        onRemoveTeam = { viewModel.removeTeam(it) }
-                    )
-                    1 -> BracketTab(
-                        matches = tournament.matches,
-                        currentRound = tournament.currentRound,
-                        onMatchClick = onMatchClick
-                    )
-                    2 -> StatsTab(topScorers = state.topScorers)
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Action buttons
-                if (state.canStart) {
-                    ActionButton(
-                        text = stringResource(R.string.tournament_start),
-                        icon = Icons.Default.PlayArrow,
-                        onClick = { viewModel.startTournament() }
-                    )
-                }
-
-                if (state.canAdvance) {
-                    ActionButton(
-                        text = stringResource(R.string.tournament_advance_round),
-                        icon = Icons.Default.ArrowForward,
-                        onClick = { viewModel.advanceRound() }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }
@@ -199,56 +292,99 @@ fun TournamentDetailScreen(
 @Composable
 private fun StatusHeader(
     status: TournamentStatus,
-    currentRound: String,
+    currentRound: com.gundogar.lineupapp.data.model.TournamentRound,
     winnerName: String?
 ) {
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.1f)
-        )
+            .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (winnerName != null) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = SecondaryGold,
-                    modifier = Modifier.size(48.dp)
+        if (winnerName != null) {
+            // ŞAMPİYONLUK BÖLÜMÜ - Bir karttan ziyade bir "başarı sertifikası" gibi
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Sol tarafta kalın bir altın şerit
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .height(40.dp)
+                        .background(SecondaryGold, RoundedCornerShape(2.dp))
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.tournament_winner, winnerName),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = SecondaryGold,
-                    fontWeight = FontWeight.Bold
-                )
-            } else {
-                val statusColor = when (status) {
-                    TournamentStatus.SETUP -> Color.Gray
-                    TournamentStatus.IN_PROGRESS -> SecondaryGold
-                    TournamentStatus.COMPLETED -> Color.Green.copy(alpha = 0.7f)
-                }
-                Text(
-                    text = status.displayName,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = statusColor
-                )
-                if (status == TournamentStatus.IN_PROGRESS) {
-                    Spacer(modifier = Modifier.height(4.dp))
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column {
                     Text(
-                        text = currentRound,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White
+                        text = stringResource(R.string.tournament_completed),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White.copy(alpha = 0.5f),
+                        fontWeight = FontWeight.Light
                     )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = winnerName.uppercase(),
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = SecondaryGold,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.Default.EmojiEvents,
+                            contentDescription = null,
+                            tint = SecondaryGold,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+            }
+        } else {
+            // DEVAM EDEN TURNUVA - Skor tabelası estetiği
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.curren_status),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.5f),
+                        letterSpacing = 1.5.sp
+                    )
+                    Text(
+                        text = stringResource(currentRound.displayNameResId),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+
+                // Sağ tarafa durum göstergesi (Daha teknik bir görünüm)
+                Column(horizontalAlignment = Alignment.End) {
+                    val statusColor = when (status) {
+                        TournamentStatus.SETUP -> Color.Gray
+                        TournamentStatus.IN_PROGRESS -> SecondaryGold
+                        TournamentStatus.COMPLETED -> Color.Green
+                    }
+
+                    // Küçük bir canlılık noktası ve metin
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(statusColor, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(status.displayNameResId),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = statusColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -359,7 +495,7 @@ private fun TeamItem(
                     )
                     if (team.players.isNotEmpty()) {
                         Text(
-                            text = "${team.players.size} players",
+                            text = stringResource(R.string.tournament_players_count, team.players.size),
                             style = MaterialTheme.typography.labelSmall,
                             color = Color.White.copy(alpha = 0.6f)
                         )
@@ -395,7 +531,7 @@ private fun BracketTab(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Start the tournament to see the bracket",
+                text = stringResource(R.string.tournament_bracket_empty),
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center
@@ -416,7 +552,7 @@ private fun BracketTab(
             matchesByRound.entries.sortedByDescending { it.key?.teamsRequired ?: 0 }.forEach { (round, roundMatches) ->
                 item {
                     Text(
-                        text = round?.displayName ?: "Round",
+                        text = round?.let { stringResource(it.displayNameResId) } ?: stringResource(R.string.tournament_round_fallback),
                         style = MaterialTheme.typography.titleMedium,
                         color = if (round == currentRound) SecondaryGold else Color.White.copy(alpha = 0.7f),
                         modifier = Modifier.padding(vertical = 8.dp)
@@ -446,7 +582,10 @@ private fun BracketMatchItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = isCurrentRound && !match.isBye && !match.isCompleted, onClick = onClick),
+            .clickable(
+                enabled = isCurrentRound && !match.isBye && !match.isCompleted,
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = when {
@@ -537,7 +676,7 @@ private fun StatsTab(topScorers: List<PlayerStatistics>) {
         if (topScorers.isEmpty()) {
             item {
                 Text(
-                    text = "No goals scored yet",
+                    text = stringResource(R.string.tournament_no_goals),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.6f)
                 )
@@ -605,7 +744,7 @@ private fun TopScorerItem(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    Icons.Default.Place,
+                    Icons.Default.SportsSoccer,
                     contentDescription = null,
                     tint = SecondaryGold,
                     modifier = Modifier.size(16.dp)

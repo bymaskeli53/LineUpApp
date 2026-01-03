@@ -21,6 +21,7 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavItem.Home,
         BottomNavItem.SavedLineups,
         BottomNavItem.Matches,
+        BottomNavItem.Tournaments,
         BottomNavItem.NearbyPitches
     )
 
@@ -64,6 +65,7 @@ fun shouldShowBottomNav(route: String?): Boolean {
         BottomNavItem.Home.route,
         BottomNavItem.SavedLineups.route,
         BottomNavItem.Matches.route,
+        BottomNavItem.Tournaments.route,
         BottomNavItem.NearbyPitches.route
     )
 }

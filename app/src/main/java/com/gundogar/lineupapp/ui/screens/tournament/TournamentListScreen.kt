@@ -225,7 +225,7 @@ private fun TournamentCard(
             if (tournament.status == TournamentStatus.IN_PROGRESS) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = tournament.currentRound.displayName,
+                    text = stringResource(tournament.currentRound.displayNameResId),
                     style = MaterialTheme.typography.bodySmall,
                     color = SecondaryGold
                 )

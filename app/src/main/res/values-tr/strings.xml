@@ -219,6 +219,19 @@
 
     <string name="tournament_delete_title">Turnuva silinsin mi?</string>
     <string name="tournament_delete_message">\"%s\" turnuvasını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
+    <string name="tournament_error_not_found">Turnuva bulunamadı</string>
+    <string name="tournament_error_load_failed">Turnuva yüklenemedi</string>
+    <string name="tournament_draws_warning">Devam etmeden önce beraberlikler çözülmeli. Kazananı belirlemek için maç skorlarını düzenleyin.</string>
+    <string name="tournament_need_teams">Turnuvayı başlatmak için %d takım daha ekleyin</string>
+    <string name="tournament_completed">TURNUVA TAMAMLANDI</string>
+    <string name="tournament_bracket_empty">Eşleşmeleri görmek için turnuvayı başlatın</string>
+    <string name="tournament_no_goals">Henüz gol atılmadı</string>
+    <string name="tournament_players_count">%d oyuncu</string>
+    <string name="tournament_round_fallback">Tur</string>
 
+    <!-- Common -->
+    <string name="loading">Yükleniyor…</string>
+    <string name="btn_go_back">Geri Dön</string>
+    <string name="curren_status">Güncel Durum</string>
 
 </resources>
