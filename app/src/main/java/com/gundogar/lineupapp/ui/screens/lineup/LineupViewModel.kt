@@ -3,9 +3,8 @@ package com.gundogar.lineupapp.ui.screens.lineup
 import android.app.Application
 import android.net.Uri
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gundogar.lineupapp.data.local.LineupDatabase
 import com.gundogar.lineupapp.data.model.DrawingState
 import com.gundogar.lineupapp.data.model.DrawingStroke
 import com.gundogar.lineupapp.data.model.DrawingTool
@@ -16,11 +15,13 @@ import com.gundogar.lineupapp.data.model.TeamConfig
 import com.gundogar.lineupapp.data.repository.FormationRepository
 import com.gundogar.lineupapp.data.repository.SavedLineupRepository
 import com.gundogar.lineupapp.util.ImageStorageUtil
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class LineupScreenState(
     val formation: Formation? = null,
@@ -42,10 +43,11 @@ data class LineupScreenState(
         get() = customPositions ?: formation?.positions ?: emptyList()
 }
 
-class LineupViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val database = LineupDatabase.getDatabase(application)
-    private val repository = SavedLineupRepository(database.savedLineupDao())
+@HiltViewModel
+class LineupViewModel @Inject constructor(
+    private val application: Application,
+    private val repository: SavedLineupRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(LineupScreenState())
     val state: StateFlow<LineupScreenState> = _state.asStateFlow()
@@ -163,7 +165,7 @@ class LineupViewModel(application: Application) : AndroidViewModel(application) 
                         ImageStorageUtil.deleteImage(currentPlayer.imageUri)
                     }
                     // Copy new image to app storage
-                    ImageStorageUtil.copyImageToAppStorage(getApplication(), pendingImageUri)
+                    ImageStorageUtil.copyImageToAppStorage(application, pendingImageUri)
                 }
                 existingImagePath != null -> existingImagePath
                 else -> {

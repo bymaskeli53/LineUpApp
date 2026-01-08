@@ -57,7 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.customization.TeamCustomizationSheet
 import com.gundogar.lineupapp.ui.screens.lineup.components.DraggablePlayerJersey
@@ -81,7 +81,7 @@ fun LineupScreen(
     playerCount: Int? = null,
     onNavigateBack: () -> Unit,
     onLineupSaved: () -> Unit = {},
-    viewModel: LineupViewModel = viewModel()
+    viewModel: LineupViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current

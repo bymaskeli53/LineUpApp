@@ -1,19 +1,21 @@
 package com.gundogar.lineupapp.ui.screens
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gundogar.lineupapp.data.preferences.OnboardingPreferences
 import com.gundogar.lineupapp.ui.navigation.Screen
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SplashViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val onboardingPreferences = OnboardingPreferences(application)
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    private val onboardingPreferences: OnboardingPreferences
+) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()

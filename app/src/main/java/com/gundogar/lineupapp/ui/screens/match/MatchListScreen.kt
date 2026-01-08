@@ -44,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.Match
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
@@ -53,7 +53,7 @@ import com.gundogar.lineupapp.ui.theme.SecondaryGold
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MatchListScreen(
-    viewModel: MatchListViewModel = viewModel(),
+    viewModel: MatchListViewModel = hiltViewModel(),
     onCreateMatch: () -> Unit,
     onMatchClick: (Long) -> Unit
 ) {

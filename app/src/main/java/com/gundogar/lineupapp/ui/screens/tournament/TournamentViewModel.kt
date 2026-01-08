@@ -1,9 +1,8 @@
 package com.gundogar.lineupapp.ui.screens.tournament
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gundogar.lineupapp.data.local.LineupDatabase
 import com.gundogar.lineupapp.data.model.Match
 import com.gundogar.lineupapp.data.model.Player
 import com.gundogar.lineupapp.data.model.PlayerStatistics
@@ -11,11 +10,13 @@ import com.gundogar.lineupapp.data.model.TeamConfig
 import com.gundogar.lineupapp.data.model.Tournament
 import com.gundogar.lineupapp.data.model.TournamentStatus
 import com.gundogar.lineupapp.data.repository.TournamentRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class TournamentListState(
     val tournaments: List<Tournament> = emptyList(),
@@ -41,14 +42,10 @@ data class TournamentDetailState(
     val hasDraws: Boolean = false
 )
 
-class TournamentListViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = LineupDatabase.getDatabase(application)
-    private val tournamentRepository = TournamentRepository(
-        database.tournamentDao(),
-        database.tournamentTeamDao(),
-        database.matchDao(),
-        database.goalDao()
-    )
+@HiltViewModel
+class TournamentListViewModel @Inject constructor(
+    private val tournamentRepository: TournamentRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(TournamentListState())
     val state: StateFlow<TournamentListState> = _state.asStateFlow()
@@ -73,14 +70,10 @@ class TournamentListViewModel(application: Application) : AndroidViewModel(appli
     }
 }
 
-class CreateTournamentViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = LineupDatabase.getDatabase(application)
-    private val tournamentRepository = TournamentRepository(
-        database.tournamentDao(),
-        database.tournamentTeamDao(),
-        database.matchDao(),
-        database.goalDao()
-    )
+@HiltViewModel
+class CreateTournamentViewModel @Inject constructor(
+    private val tournamentRepository: TournamentRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(CreateTournamentState())
     val state: StateFlow<CreateTournamentState> = _state.asStateFlow()
@@ -107,17 +100,13 @@ class CreateTournamentViewModel(application: Application) : AndroidViewModel(app
     fun isValid(): Boolean = _state.value.name.isNotBlank()
 }
 
-class TournamentDetailViewModel(
-    application: Application,
-    private val tournamentId: Long
-) : AndroidViewModel(application) {
-    private val database = LineupDatabase.getDatabase(application)
-    private val tournamentRepository = TournamentRepository(
-        database.tournamentDao(),
-        database.tournamentTeamDao(),
-        database.matchDao(),
-        database.goalDao()
-    )
+@HiltViewModel
+class TournamentDetailViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val tournamentRepository: TournamentRepository
+) : ViewModel() {
+
+    private val tournamentId: Long = checkNotNull(savedStateHandle["tournamentId"])
 
     private val _state = MutableStateFlow(TournamentDetailState())
     val state: StateFlow<TournamentDetailState> = _state.asStateFlow()

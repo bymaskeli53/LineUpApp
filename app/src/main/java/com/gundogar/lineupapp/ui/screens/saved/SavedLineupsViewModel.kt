@@ -1,16 +1,16 @@
 package com.gundogar.lineupapp.ui.screens.saved
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gundogar.lineupapp.data.local.LineupDatabase
 import com.gundogar.lineupapp.data.repository.SavedLineup
 import com.gundogar.lineupapp.data.repository.SavedLineupRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class SavedLineupsState(
     val savedLineups: List<SavedLineup> = emptyList(),
@@ -19,10 +19,10 @@ data class SavedLineupsState(
     val showDeleteDialog: Boolean = false
 )
 
-class SavedLineupsViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val database = LineupDatabase.getDatabase(application)
-    private val repository = SavedLineupRepository(database.savedLineupDao())
+@HiltViewModel
+class SavedLineupsViewModel @Inject constructor(
+    private val repository: SavedLineupRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(SavedLineupsState())
     val state: StateFlow<SavedLineupsState> = _state.asStateFlow()

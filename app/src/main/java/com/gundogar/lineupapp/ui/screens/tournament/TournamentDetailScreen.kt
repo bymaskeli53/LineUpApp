@@ -60,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.Match
 import com.gundogar.lineupapp.data.model.PlayerStatistics
@@ -72,7 +73,7 @@ import com.gundogar.lineupapp.ui.theme.SecondaryGold
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TournamentDetailScreen(
-    viewModel: TournamentDetailViewModel,
+    viewModel: TournamentDetailViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onMatchClick: (Long) -> Unit
 ) {

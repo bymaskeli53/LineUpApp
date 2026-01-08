@@ -44,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.saved.components.SavedLineupCard
 import com.gundogar.lineupapp.ui.theme.GrassGreen
@@ -59,7 +59,7 @@ fun SavedLineupsScreen(
     onCreateNew: () -> Unit,
     onOpenLineup: (Long) -> Unit,
     onEditLineup: (Long) -> Unit,
-    viewModel: SavedLineupsViewModel = viewModel()
+    viewModel: SavedLineupsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 

@@ -1,19 +1,20 @@
 package com.gundogar.lineupapp.ui.screens.match
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gundogar.lineupapp.data.local.LineupDatabase
 import com.gundogar.lineupapp.data.model.Goal
 import com.gundogar.lineupapp.data.model.Match
 import com.gundogar.lineupapp.data.model.Player
 import com.gundogar.lineupapp.data.model.TeamConfig
 import com.gundogar.lineupapp.data.repository.MatchRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class MatchListState(
     val matches: List<Match> = emptyList(),
@@ -46,9 +47,10 @@ data class MatchScoringState(
     val canComplete: Boolean = true
 )
 
-class MatchListViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = LineupDatabase.getDatabase(application)
-    private val matchRepository = MatchRepository(database.matchDao(), database.goalDao())
+@HiltViewModel
+class MatchListViewModel @Inject constructor(
+    private val matchRepository: MatchRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(MatchListState())
     val state: StateFlow<MatchListState> = _state.asStateFlow()
@@ -83,9 +85,10 @@ class MatchListViewModel(application: Application) : AndroidViewModel(applicatio
     }
 }
 
-class CreateMatchViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = LineupDatabase.getDatabase(application)
-    private val matchRepository = MatchRepository(database.matchDao(), database.goalDao())
+@HiltViewModel
+class CreateMatchViewModel @Inject constructor(
+    private val matchRepository: MatchRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(CreateMatchState())
     val state: StateFlow<CreateMatchState> = _state.asStateFlow()
@@ -130,12 +133,13 @@ class CreateMatchViewModel(application: Application) : AndroidViewModel(applicat
     }
 }
 
-class MatchScoringViewModel(
-    application: Application,
-    private val matchId: Long
-) : AndroidViewModel(application) {
-    private val database = LineupDatabase.getDatabase(application)
-    private val matchRepository = MatchRepository(database.matchDao(), database.goalDao())
+@HiltViewModel
+class MatchScoringViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val matchRepository: MatchRepository
+) : ViewModel() {
+
+    private val matchId: Long = checkNotNull(savedStateHandle["matchId"])
 
     private val _state = MutableStateFlow(MatchScoringState())
     val state: StateFlow<MatchScoringState> = _state.asStateFlow()

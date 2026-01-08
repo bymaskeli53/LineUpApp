@@ -20,7 +20,9 @@ import com.gundogar.lineupapp.ui.components.shouldShowBottomNav
 import com.gundogar.lineupapp.ui.navigation.LineUpNavGraph
 import com.gundogar.lineupapp.ui.screens.SplashViewModel
 import com.gundogar.lineupapp.ui.theme.LineUpAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: SplashViewModel by viewModels()

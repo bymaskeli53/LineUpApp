@@ -39,7 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.formation.components.FormationCard
 import com.gundogar.lineupapp.ui.theme.GrassGreen
@@ -52,7 +52,7 @@ import com.gundogar.lineupapp.ui.theme.SecondaryGold
 fun FormationSelectionScreen(
     onFormationSelected: (String) -> Unit,
     onViewSavedLineups: () -> Unit,
-    viewModel: FormationSelectionViewModel = viewModel()
+    viewModel: FormationSelectionViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 

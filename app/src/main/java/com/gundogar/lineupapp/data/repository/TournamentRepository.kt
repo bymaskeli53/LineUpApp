@@ -24,8 +24,11 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.random.Random
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class TournamentRepository(
+@Singleton
+class TournamentRepository @Inject constructor(
     private val tournamentDao: TournamentDao,
     private val teamDao: TournamentTeamDao,
     private val matchDao: MatchDao,

@@ -16,8 +16,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MatchRepository(
+@Singleton
+class MatchRepository @Inject constructor(
     private val matchDao: MatchDao,
     private val goalDao: GoalDao
 ) {

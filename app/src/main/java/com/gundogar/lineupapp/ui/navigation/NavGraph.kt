@@ -13,23 +13,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.gundogar.lineupapp.data.local.LineupDatabase
 import com.gundogar.lineupapp.data.preferences.OnboardingPreferences
 import com.gundogar.lineupapp.ui.screens.formation.FormationSelectionScreen
 import com.gundogar.lineupapp.ui.screens.lineup.LineupScreen
 import com.gundogar.lineupapp.ui.screens.match.CreateMatchScreen
 import com.gundogar.lineupapp.ui.screens.match.MatchListScreen
 import com.gundogar.lineupapp.ui.screens.match.MatchScoringScreen
-import com.gundogar.lineupapp.ui.screens.match.MatchScoringViewModel
 import com.gundogar.lineupapp.ui.screens.onboarding.OnboardingScreen
 import com.gundogar.lineupapp.ui.screens.pitches.NearbyPitchesScreen
 import com.gundogar.lineupapp.ui.screens.saved.SavedLineupsScreen
 import com.gundogar.lineupapp.ui.screens.teamsize.TeamSizeSelectionScreen
 import com.gundogar.lineupapp.ui.screens.tournament.CreateTournamentScreen
 import com.gundogar.lineupapp.ui.screens.tournament.TournamentDetailScreen
-import com.gundogar.lineupapp.ui.screens.tournament.TournamentDetailViewModel
 import com.gundogar.lineupapp.ui.screens.tournament.TournamentListScreen
 import kotlinx.coroutines.launch
 
@@ -305,14 +301,8 @@ fun LineUpNavGraph(
                     animationSpec = tween(300)
                 ) + fadeOut(animationSpec = tween(300))
             }
-        ) { backStackEntry ->
-            val matchId = backStackEntry.arguments?.getLong("matchId") ?: return@composable
-            val application = context.applicationContext as android.app.Application
-            val viewModel = remember(matchId) {
-                MatchScoringViewModel(application, matchId)
-            }
+        ) {
             MatchScoringScreen(
-                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -381,14 +371,8 @@ fun LineUpNavGraph(
                     animationSpec = tween(300)
                 ) + fadeOut(animationSpec = tween(300))
             }
-        ) { backStackEntry ->
-            val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: return@composable
-            val application = context.applicationContext as android.app.Application
-            val viewModel = remember(tournamentId) {
-                TournamentDetailViewModel(application, tournamentId)
-            }
+        ) {
             TournamentDetailScreen(
-                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onMatchClick = { matchId ->
                     navController.navigate(Screen.MatchScoring.createRoute(matchId))

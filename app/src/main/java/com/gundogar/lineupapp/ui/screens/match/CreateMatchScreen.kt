@@ -39,7 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.match.components.TeamImportDialog
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
@@ -48,7 +48,7 @@ import com.gundogar.lineupapp.ui.theme.SecondaryGold
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateMatchScreen(
-    viewModel: CreateMatchViewModel = viewModel(),
+    viewModel: CreateMatchViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onMatchCreated: (Long) -> Unit
 ) {

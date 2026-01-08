@@ -14,6 +14,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
 data class SavedLineup(
     val id: Long = 0,
@@ -29,7 +31,8 @@ data class SavedLineup(
     val updatedAt: Long
 )
 
-class SavedLineupRepository(private val dao: SavedLineupDao) {
+@Singleton
+class SavedLineupRepository @Inject constructor(private val dao: SavedLineupDao) {
 
     private val gson = Gson()
 

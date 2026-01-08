@@ -5,8 +5,11 @@ import com.gundogar.lineupapp.data.local.dao.FootballPitchDao
 import com.gundogar.lineupapp.data.local.entity.FootballPitchEntity
 import com.gundogar.lineupapp.data.model.FootballPitch
 import com.gundogar.lineupapp.data.remote.api.OverpassApiService
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FootballPitchRepository(
+@Singleton
+class FootballPitchRepository @Inject constructor(
     private val api: OverpassApiService,
     private val dao: FootballPitchDao
 ) {

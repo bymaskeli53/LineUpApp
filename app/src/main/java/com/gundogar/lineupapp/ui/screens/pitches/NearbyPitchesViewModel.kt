@@ -1,19 +1,18 @@
 package com.gundogar.lineupapp.ui.screens.pitches
 
-import android.app.Application
 import android.location.Location
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gundogar.lineupapp.data.local.LineupDatabase
 import com.gundogar.lineupapp.data.model.FootballPitch
-import com.gundogar.lineupapp.data.remote.NetworkModule
 import com.gundogar.lineupapp.data.repository.FootballPitchRepository
 import com.gundogar.lineupapp.util.LocationHelper
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class NearbyPitchesState(
     val isLoading: Boolean = false,
@@ -25,14 +24,11 @@ data class NearbyPitchesState(
     val searchRadiusMeters: Int = 5000
 )
 
-class NearbyPitchesViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val database = LineupDatabase.getDatabase(application)
-    private val repository = FootballPitchRepository(
-        api = NetworkModule.overpassApi,
-        dao = database.footballPitchDao()
-    )
-    private val locationHelper = LocationHelper(application)
+@HiltViewModel
+class NearbyPitchesViewModel @Inject constructor(
+    private val repository: FootballPitchRepository,
+    private val locationHelper: LocationHelper
+) : ViewModel() {
 
     private val _state = MutableStateFlow(NearbyPitchesState())
     val state: StateFlow<NearbyPitchesState> = _state.asStateFlow()

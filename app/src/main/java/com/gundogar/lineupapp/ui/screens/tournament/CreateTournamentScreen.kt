@@ -44,7 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
 import com.gundogar.lineupapp.ui.theme.SecondaryGold
@@ -52,7 +52,7 @@ import com.gundogar.lineupapp.ui.theme.SecondaryGold
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreateTournamentScreen(
-    viewModel: CreateTournamentViewModel = viewModel(),
+    viewModel: CreateTournamentViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onTournamentCreated: (Long) -> Unit
 ) {
