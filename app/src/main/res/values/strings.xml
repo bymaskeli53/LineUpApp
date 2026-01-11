@@ -123,10 +123,10 @@
 
     <!-- Navigation -->
     <string name="nav_create">Create</string>
-    <string name="nav_saved">My Lineups</string>
-    <string name="nav_matches">Matches</string>
+    <string name="nav_saved">Lineup</string>
+    <string name="nav_matches">Games</string>
     <string name="nav_tournaments">Cups</string>
-    <string name="nav_pitches">Pitches</string>
+    <string name="nav_pitches">Pitch</string>
 
     <!-- Match Screens -->
     <string name="screen_title_matches">Matches</string>

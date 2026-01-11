@@ -31,6 +31,9 @@ import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.ui.screens.pitches.components.LocationPermissionContent
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
 import com.gundogar.lineupapp.ui.theme.SecondaryGold
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import com.gundogar.lineupapp.ui.theme.LineUpAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -128,5 +131,22 @@ fun NearbyPitchesScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(name = "Small Phone", widthDp = 320, heightDp = 568)
+@Preview(name = "Normal Phone", widthDp = 360, heightDp = 640)
+@Preview(name = "Large Phone", widthDp = 411, heightDp = 891)
+@Preview(name = "Tablet", widthDp = 800, heightDp = 1280)
+@Preview(name = "Phone", device = Devices.PIXEL_4)
+@Preview(name = "Phone Small", device = Devices.PIXEL_2)
+@Preview(name = "Tablet Device", device = Devices.PIXEL_TABLET)
+@Preview(name = "Foldable", device = Devices.FOLDABLE)
+@Preview(name = "Large Font", fontScale = 1.5f)
+@Preview(showBackground = true)
+@Composable
+private fun NearbyPitchesScreenPreview() {
+    LineUpAppTheme {
+        NearbyPitchesScreen()
     }
 }
