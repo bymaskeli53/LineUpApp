@@ -194,6 +194,11 @@ fun LineupScreen(
                             }
 
                             // Position players on the pitch (only interactive when not in drawing mode)
+                            // Jersey component has fixed width of 80dp for consistent centering
+                            // Jersey center is at: X = 40dp (half of 80dp), Y = 26dp (4dp padding + 22dp half of 44dp jersey)
+                            val componentWidth = 80.dp  // Fixed component width
+                            val jerseyCenterY = 26.dp   // Distance from component top to jersey center
+
                             if (!state.drawingState.isDrawingMode) {
                                 BoxWithConstraints(
                                     modifier = Modifier.fillMaxSize()
@@ -204,9 +209,11 @@ fun LineupScreen(
 
                                     state.effectivePositions.forEach { position ->
                                         val player = state.players[position.id]
-                                        val xOffset = (position.xPercent * maxWidth.value - 24).dp
-                                        val yOffset =
-                                            ((1f - position.yPercent) * maxHeight.value - 30).dp
+                                        // Center the jersey icon at the target position
+                                        // X: position the component so jersey center (at componentWidth/2) is at target X
+                                        // Y: position the component so jersey center (at jerseyCenterY from top) is at target Y
+                                        val xOffset = maxWidth * position.xPercent - componentWidth / 2
+                                        val yOffset = maxHeight * (1f - position.yPercent) - jerseyCenterY
 
                                         if (state.isCustomizable) {
                                             DraggablePlayerJersey(
@@ -253,9 +260,9 @@ fun LineupScreen(
                                 ) {
                                     state.effectivePositions.forEach { position ->
                                         val player = state.players[position.id]
-                                        val xOffset = (position.xPercent * maxWidth.value - 24).dp
-                                        val yOffset =
-                                            ((1f - position.yPercent) * maxHeight.value - 30).dp
+                                        // Center the jersey icon at the target position
+                                        val xOffset = maxWidth * position.xPercent - componentWidth / 2
+                                        val yOffset = maxHeight * (1f - position.yPercent) - jerseyCenterY
 
                                         PlayerJersey(
                                             position = position,
