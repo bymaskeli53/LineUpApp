@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.RecentActors
@@ -40,7 +41,7 @@ sealed class BottomNavItem(
     data object Tournaments : BottomNavItem(
         route = Screen.TournamentList.route,
         titleResId = R.string.nav_tournaments,
-        icon = Icons.Default.Star
+        icon = Icons.Default.EmojiEvents
     )
 
     data object NearbyPitches : BottomNavItem(

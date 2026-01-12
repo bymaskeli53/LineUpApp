@@ -124,8 +124,8 @@
     <!-- Navigation -->
     <string name="nav_create">Create</string>
     <string name="nav_saved">Lineup</string>
-    <string name="nav_matches">Games</string>
-    <string name="nav_tournaments">Cups</string>
+    <string name="nav_matches">Game</string>
+    <string name="nav_tournaments">Cup</string>
     <string name="nav_pitches">Pitch</string>
 
     <!-- Match Screens -->

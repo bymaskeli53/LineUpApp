@@ -125,8 +125,8 @@
     <string name="nav_create">Oluştur</string>
     <string name="nav_saved">Kadro</string>
     <string name="nav_pitches">Saha</string>
-    <string name="nav_matches">Maçlar</string>
-    <string name="nav_tournaments">Turnuvalar</string>
+    <string name="nav_matches">Maç</string>
+    <string name="nav_tournaments">Turnuva</string>
 
 
     <!-- Nearby Pitches -->
