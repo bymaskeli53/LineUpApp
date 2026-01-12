@@ -15,12 +15,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
@@ -97,7 +100,10 @@ fun PlayerNameDialog(
         },
         text = {
             Column(
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .heightIn(max = 390.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Text(
                     text = stringResource(R.string.player_position_format, positionName),
@@ -316,7 +322,8 @@ fun PlayerNameDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.btn_cancel))
             }
-        }
+        },
+
     )
 }
 
@@ -367,6 +374,7 @@ private fun getPositionNameString(role: PositionRole): String {
 }
 
 @Preview(showBackground = true)
+@Preview(name = "Small Phone", widthDp = 320)
 @Composable
 private fun PlayerNameDialogPreview() {
     LineUpAppTheme {
@@ -379,5 +387,24 @@ private fun PlayerNameDialogPreview() {
             onDismiss = {},
             onConfirm = { _, _, _, _, _ -> }
         )
+    }
+}
+
+@Preview(name = "Keyboard Open - Small Phone", widthDp = 320, heightDp = 350)
+@Preview(name = "Keyboard Open - Normal Phone", widthDp = 360, heightDp = 400)
+@Composable
+private fun PlayerNameDialogKeyboardOpenPreview() {
+    LineUpAppTheme {
+        Box(modifier = Modifier.fillMaxSize()) {
+            PlayerNameDialog(
+                position = Position(10, PositionRole.FORWARD, 0.5f, 0.75f),
+                currentName = "Ronaldo",
+                currentNumber = 10,
+                currentRating = 9.3,
+                currentImageUri = null,
+                onDismiss = {},
+                onConfirm = { _, _, _, _, _ -> }
+            )
+        }
     }
 }
