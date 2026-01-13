@@ -168,9 +168,6 @@ private fun TeamSizeCard(
             .fillMaxWidth()
             .heightIn(min = 120.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected)
-                SecondaryGold.copy(alpha = 0.15f)
-            else
                 MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
         ),
         border = if (isSelected) BorderStroke(2.dp, SecondaryGold) else null,
