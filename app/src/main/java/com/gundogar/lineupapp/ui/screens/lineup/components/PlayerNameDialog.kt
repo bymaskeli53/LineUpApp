@@ -69,7 +69,8 @@ fun PlayerNameDialog(
     currentRating: Double?,
     currentImageUri: String?,
     onDismiss: () -> Unit,
-    onConfirm: (name: String, number: Int?, rating: Double?, pendingImageUri: Uri?, existingImagePath: String?) -> Unit
+    onConfirm: (name: String, number: Int?, rating: Double?, pendingImageUri: Uri?, existingImagePath: String?) -> Unit,
+    isNumberAlreadyUsed: (Int) -> Boolean = { false }
 ) {
     var name by remember { mutableStateOf(currentName) }
     var numberText by remember { mutableStateOf(currentNumber?.toString() ?: "") }
@@ -78,6 +79,12 @@ fun PlayerNameDialog(
     var selectedImageUri by remember { mutableStateOf(currentImageUri) }
     var pendingImageUri by remember { mutableStateOf<Uri?>(null) }
     var imageRemoved by remember { mutableStateOf(false) }
+
+    // Check if the entered number is already used by another player
+    val isDuplicateNumber = remember(numberText) {
+        val number = numberText.toIntOrNull()
+        number != null && isNumberAlreadyUsed(number)
+    }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -239,7 +246,11 @@ fun PlayerNameDialog(
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number
-                        )
+                        ),
+                        isError = isDuplicateNumber,
+                        supportingText = if (isDuplicateNumber) {
+                            { Text(stringResource(R.string.player_number_duplicate_error)) }
+                        } else null
                     )
                 }
 
@@ -309,11 +320,12 @@ fun PlayerNameDialog(
                     val finalRating = if (ratingEnabled) rating.toDouble() else null
                     val existingPath = if (imageRemoved) null else selectedImageUri
                     onConfirm(name.trim(), number, finalRating, pendingImageUri, existingPath)
-                }
+                },
+                enabled = !isDuplicateNumber
             ) {
                 Text(
                     text = stringResource(R.string.btn_save),
-                    color = SecondaryGold,
+                    color = if (isDuplicateNumber) Color.Gray else SecondaryGold,
                     fontWeight = FontWeight.Bold
                 )
             }

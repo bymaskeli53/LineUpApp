@@ -433,6 +433,9 @@ fun LineupScreen(
                     onDismiss = { viewModel.onPlayerDialogDismiss() },
                     onConfirm = { name, number, rating, pendingImageUri, existingImagePath ->
                         viewModel.onPlayerSave(name, number, rating, pendingImageUri, existingImagePath)
+                    },
+                    isNumberAlreadyUsed = { number ->
+                        viewModel.isNumberAlreadyUsed(number, selectedPosition.id)
                     }
                 )
             }

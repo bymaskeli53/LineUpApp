@@ -258,6 +258,18 @@ class LineupViewModel @Inject constructor(
         return _state.value.players[positionId]
     }
 
+    /**
+     * Check if a jersey number is already used by another player in the lineup.
+     * @param number The jersey number to check
+     * @param excludePositionId The position ID of the current player (to exclude from check)
+     * @return true if the number is already used by another player
+     */
+    fun isNumberAlreadyUsed(number: Int, excludePositionId: Int): Boolean {
+        return _state.value.players.any { (positionId, player) ->
+            positionId != excludePositionId && player.number == number
+        }
+    }
+
     // Drawing methods
     fun toggleDrawingMode() {
         _state.update { currentState ->
