@@ -208,6 +208,7 @@ class TacticViewModel @Inject constructor(
     }
 
     fun enterPreviewMode() {
+
         if (_state.value.playbackState.isPlaying) return
 
         _state.update { currentState ->
@@ -477,8 +478,14 @@ class TacticViewModel @Inject constructor(
             val playbackState = currentState.playbackState
             val currentFrameIdx = playbackState.currentFrameIndex
             val isLastFrame = currentFrameIdx == frames.size - 1
-            val nextFrameIdx = if (isLastFrame) currentFrameIdx else currentFrameIdx + 1
 
+            // If we're on the last frame, stop immediately (no need to "play" static position)
+            if (isLastFrame) {
+                stopPlayback()
+                return
+            }
+
+            val nextFrameIdx = currentFrameIdx + 1
             val currentFrame = frames[currentFrameIdx]
             val nextFrame = frames[nextFrameIdx]
 
@@ -488,12 +495,6 @@ class TacticViewModel @Inject constructor(
             val newProgress = playbackState.progress + progressIncrement
 
             if (newProgress >= 1f) {
-                if (isLastFrame) {
-                    // On last frame - stop playback
-                    stopPlayback()
-                    return
-                }
-
                 // Move to next frame
                 _state.update {
                     it.copy(
@@ -508,41 +509,29 @@ class TacticViewModel @Inject constructor(
                     )
                 }
             } else {
-                if (isLastFrame) {
-                    // On last frame - just show current frame, no interpolation
-                    _state.update {
-                        it.copy(
-                            playbackState = it.playbackState.copy(progress = newProgress),
-                            interpolatedPositions = null,
-                            interpolatedBallPosition = null,
-                            interpolatedStrokes = currentFrame.strokes
-                        )
-                    }
-                } else {
-                    // Interpolate positions toward next frame
-                    val interpolatedPositions = interpolatePositions(
-                        currentFrame.playerPositions,
-                        nextFrame.playerPositions,
-                        newProgress
+                // Interpolate positions toward next frame
+                val interpolatedPositions = interpolatePositions(
+                    currentFrame.playerPositions,
+                    nextFrame.playerPositions,
+                    newProgress
+                )
+
+                val interpolatedBall = interpolateBallPosition(
+                    currentFrame.ballPosition,
+                    nextFrame.ballPosition,
+                    newProgress
+                )
+
+                // Show current frame strokes during playback (no interpolation for strokes)
+                val currentStrokes = currentFrame.strokes
+
+                _state.update {
+                    it.copy(
+                        playbackState = it.playbackState.copy(progress = newProgress),
+                        interpolatedPositions = interpolatedPositions,
+                        interpolatedBallPosition = interpolatedBall,
+                        interpolatedStrokes = currentStrokes
                     )
-
-                    val interpolatedBall = interpolateBallPosition(
-                        currentFrame.ballPosition,
-                        nextFrame.ballPosition,
-                        newProgress
-                    )
-
-                    // Show current frame strokes during playback (no interpolation for strokes)
-                    val currentStrokes = currentFrame.strokes
-
-                    _state.update {
-                        it.copy(
-                            playbackState = it.playbackState.copy(progress = newProgress),
-                            interpolatedPositions = interpolatedPositions,
-                            interpolatedBallPosition = interpolatedBall,
-                            interpolatedStrokes = currentStrokes
-                        )
-                    }
                 }
             }
 
