@@ -8,11 +8,11 @@ import java.util.UUID
  * Available drawing tools for tactics overlay
  */
 enum class DrawingTool {
-    PEN,        // Freehand drawing
-    ARROW,      // Straight arrow with head
-    LINE,       // Straight line
-    CIRCLE,     // Circle/ellipse
-    ERASER      // Erase strokes
+    PEN,         // Freehand drawing
+    ARROW,       // Straight arrow with head
+    LINE,        // Straight line
+    DASHED_LINE, // Dashed straight line
+    ERASER       // Erase strokes
 }
 
 /**

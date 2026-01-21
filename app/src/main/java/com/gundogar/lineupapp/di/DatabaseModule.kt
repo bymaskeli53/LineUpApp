@@ -7,6 +7,7 @@ import com.gundogar.lineupapp.data.local.dao.FootballPitchDao
 import com.gundogar.lineupapp.data.local.dao.GoalDao
 import com.gundogar.lineupapp.data.local.dao.MatchDao
 import com.gundogar.lineupapp.data.local.dao.SavedLineupDao
+import com.gundogar.lineupapp.data.local.dao.TacticDao
 import com.gundogar.lineupapp.data.local.dao.TournamentDao
 import com.gundogar.lineupapp.data.local.dao.TournamentTeamDao
 import dagger.Module
@@ -60,5 +61,11 @@ object DatabaseModule {
     @Singleton
     fun provideGoalDao(database: LineupDatabase): GoalDao {
         return database.goalDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTacticDao(database: LineupDatabase): TacticDao {
+        return database.tacticDao()
     }
 }

@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
@@ -38,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,13 +63,19 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gundogar.lineupapp.R
+import com.gundogar.lineupapp.data.model.FramePosition
+import com.gundogar.lineupapp.data.model.Position
+import com.gundogar.lineupapp.data.model.PositionRole
 import com.gundogar.lineupapp.ui.screens.customization.TeamCustomizationSheet
+import com.gundogar.lineupapp.ui.screens.lineup.components.DraggableBall
 import com.gundogar.lineupapp.ui.screens.lineup.components.DraggablePlayerJersey
 import com.gundogar.lineupapp.ui.screens.lineup.components.DrawingOverlay
 import com.gundogar.lineupapp.ui.screens.lineup.components.DrawingToolbar
 import com.gundogar.lineupapp.ui.screens.lineup.components.FootballPitch
+import com.gundogar.lineupapp.ui.screens.lineup.components.PlaybackControls
 import com.gundogar.lineupapp.ui.screens.lineup.components.PlayerJersey
 import com.gundogar.lineupapp.ui.screens.lineup.components.PlayerNameDialog
+import com.gundogar.lineupapp.ui.screens.lineup.components.TimelineBar
 import com.gundogar.lineupapp.ui.theme.GrassGreen
 import com.gundogar.lineupapp.ui.theme.GrassGreenDark
 import com.gundogar.lineupapp.ui.theme.LineUpAppTheme
@@ -82,9 +91,11 @@ fun LineupScreen(
     playerCount: Int? = null,
     onNavigateBack: () -> Unit,
     onLineupSaved: () -> Unit = {},
-    viewModel: LineupViewModel = hiltViewModel()
+    viewModel: LineupViewModel = hiltViewModel(),
+    tacticViewModel: TacticViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val tacticState by tacticViewModel.state.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -179,39 +190,129 @@ fun LineupScreen(
                                 modifier = Modifier.fillMaxSize()
                             )
 
-                            // Drawing overlay (between pitch and players)
-                            if (state.drawingState.strokes.isNotEmpty() || state.drawingState.isDrawingMode) {
+                            // Drawing overlay - show different strokes based on mode
+                            val currentStrokes = if (tacticState.isTacticMode) {
+                                tacticState.effectiveStrokes
+                            } else {
+                                state.drawingState.strokes
+                            }
+                            val isDrawing = if (tacticState.isTacticMode) {
+                                tacticState.isDrawingMode
+                            } else {
+                                state.drawingState.isDrawingMode
+                            }
+
+                            if (currentStrokes.isNotEmpty() || isDrawing) {
                                 DrawingOverlay(
-                                    strokes = state.drawingState.strokes,
-                                    isDrawingMode = state.drawingState.isDrawingMode,
-                                    currentTool = state.drawingState.currentTool,
-                                    currentColor = state.drawingState.currentColor,
-                                    currentStrokeWidth = state.drawingState.currentStrokeWidth,
-                                    onStrokeComplete = { stroke -> viewModel.addStroke(stroke) },
-                                    onEraseStroke = { strokeId -> viewModel.eraseStroke(strokeId) },
+                                    strokes = currentStrokes,
+                                    isDrawingMode = isDrawing,
+                                    currentTool = if (tacticState.isTacticMode) tacticState.currentTool else state.drawingState.currentTool,
+                                    currentColor = if (tacticState.isTacticMode) tacticState.currentColor else state.drawingState.currentColor,
+                                    currentStrokeWidth = if (tacticState.isTacticMode) tacticState.currentStrokeWidth else state.drawingState.currentStrokeWidth,
+                                    onStrokeComplete = { stroke ->
+                                        if (tacticState.isTacticMode) {
+                                            tacticViewModel.addStrokeToCurrentFrame(stroke)
+                                        } else {
+                                            viewModel.addStroke(stroke)
+                                        }
+                                    },
+                                    onEraseStroke = { strokeId ->
+                                        if (tacticState.isTacticMode) {
+                                            tacticViewModel.eraseStrokeFromCurrentFrame(strokeId)
+                                        } else {
+                                            viewModel.eraseStroke(strokeId)
+                                        }
+                                    },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
 
-                            // Position players on the pitch (only interactive when not in drawing mode)
+                            // Position players on the pitch
                             // Jersey component has fixed width of 80dp for consistent centering
                             // Jersey center is at: X = 40dp (half of 80dp), Y = 26dp (4dp padding + 22dp half of 44dp jersey)
                             val componentWidth = 80.dp  // Fixed component width
                             val jerseyCenterY = 26.dp   // Distance from component top to jersey center
+                            val ballSize = 24.dp
 
-                            if (!state.drawingState.isDrawingMode) {
-                                BoxWithConstraints(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    val pitchWidthPx = maxWidth.value * LocalDensity.current.density
-                                    val pitchHeightPx =
-                                        maxHeight.value * LocalDensity.current.density
+                            BoxWithConstraints(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                val pitchWidthPx = maxWidth.value * LocalDensity.current.density
+                                val pitchHeightPx = maxHeight.value * LocalDensity.current.density
 
+                                // Determine which positions to render
+                                if (tacticState.isTacticMode) {
+                                    // Tactic Mode: Use frame positions
+                                    val framePositions = tacticState.effectivePositions
+                                    framePositions.forEach { (positionId, framePos) ->
+                                        val player = state.players[positionId]
+                                        val position = Position(
+                                            id = positionId,
+                                            role = state.effectivePositions.find { it.id == positionId }?.role
+                                                ?: com.gundogar.lineupapp.data.model.PositionRole.MIDFIELDER,
+                                            xPercent = framePos.xPercent,
+                                            yPercent = framePos.yPercent
+                                        )
+                                        val xOffset = maxWidth * framePos.xPercent - componentWidth / 2
+                                        val yOffset = maxHeight * (1f - framePos.yPercent) - jerseyCenterY
+
+                                        if (!tacticState.playbackState.isPlaying && !tacticState.isDrawingMode) {
+                                            // Draggable in edit mode
+                                            DraggablePlayerJersey(
+                                                position = position,
+                                                player = player,
+                                                teamConfig = state.teamConfig,
+                                                pitchWidthPx = pitchWidthPx,
+                                                pitchHeightPx = pitchHeightPx,
+                                                onPositionDrag = { _, newXPercent, newYPercent ->
+                                                    tacticViewModel.updatePlayerPosition(positionId, newXPercent, newYPercent)
+                                                },
+                                                onClick = { viewModel.onPlayerClick(position) },
+                                                modifier = Modifier.offset {
+                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                                }
+                                            )
+                                        } else {
+                                            // Non-interactive during playback or drawing
+                                            PlayerJersey(
+                                                position = position,
+                                                player = player,
+                                                teamConfig = state.teamConfig,
+                                                onClick = { },
+                                                modifier = Modifier.offset {
+                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
+                                                }
+                                            )
+                                        }
+                                    }
+
+                                    // Render ball in tactic mode
+                                    tacticState.effectiveBallPosition?.let { ball ->
+                                        if (ball.isVisible) {
+                                            val ballXOffset = maxWidth * ball.xPercent - ballSize / 2
+                                            val ballYOffset = maxHeight * (1f - ball.yPercent) - ballSize / 2
+
+                                            key(tacticState.currentFrameIndex, ball.xPercent, ball.yPercent) {
+                                                DraggableBall(
+                                                    xPercent = ball.xPercent,
+                                                    yPercent = ball.yPercent,
+                                                    pitchWidthPx = pitchWidthPx,
+                                                    pitchHeightPx = pitchHeightPx,
+                                                    isDraggable = !tacticState.playbackState.isPlaying && !tacticState.isDrawingMode,
+                                                    onPositionChange = { newX, newY ->
+                                                        tacticViewModel.updateBallPosition(newX, newY)
+                                                    },
+                                                    modifier = Modifier.offset {
+                                                        IntOffset(ballXOffset.roundToPx(), ballYOffset.roundToPx())
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                } else if (!state.drawingState.isDrawingMode) {
+                                    // Normal mode: Interactive players
                                     state.effectivePositions.forEach { position ->
                                         val player = state.players[position.id]
-                                        // Center the jersey icon at the target position
-                                        // X: position the component so jersey center (at componentWidth/2) is at target X
-                                        // Y: position the component so jersey center (at jerseyCenterY from top) is at target Y
                                         val xOffset = maxWidth * position.xPercent - componentWidth / 2
                                         val yOffset = maxHeight * (1f - position.yPercent) - jerseyCenterY
 
@@ -223,18 +324,11 @@ fun LineupScreen(
                                                 pitchWidthPx = pitchWidthPx,
                                                 pitchHeightPx = pitchHeightPx,
                                                 onPositionDrag = { positionId, newXPercent, newYPercent ->
-                                                    viewModel.updatePositionCoordinates(
-                                                        positionId,
-                                                        newXPercent,
-                                                        newYPercent
-                                                    )
+                                                    viewModel.updatePositionCoordinates(positionId, newXPercent, newYPercent)
                                                 },
                                                 onClick = { viewModel.onPlayerClick(position) },
                                                 modifier = Modifier.offset {
-                                                    IntOffset(
-                                                        xOffset.roundToPx(),
-                                                        yOffset.roundToPx()
-                                                    )
+                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
                                                 }
                                             )
                                         } else {
@@ -244,23 +338,15 @@ fun LineupScreen(
                                                 teamConfig = state.teamConfig,
                                                 onClick = { viewModel.onPlayerClick(position) },
                                                 modifier = Modifier.offset {
-                                                    IntOffset(
-                                                        xOffset.roundToPx(),
-                                                        yOffset.roundToPx()
-                                                    )
+                                                    IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
                                                 }
                                             )
                                         }
                                     }
-                                }
-                            } else {
-                                // Show players as non-interactive in drawing mode
-                                BoxWithConstraints(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
+                                } else {
+                                    // Drawing mode: Non-interactive players
                                     state.effectivePositions.forEach { position ->
                                         val player = state.players[position.id]
-                                        // Center the jersey icon at the target position
                                         val xOffset = maxWidth * position.xPercent - componentWidth / 2
                                         val yOffset = maxHeight * (1f - position.yPercent) - jerseyCenterY
 
@@ -268,7 +354,7 @@ fun LineupScreen(
                                             position = position,
                                             player = player,
                                             teamConfig = state.teamConfig,
-                                            onClick = { /* Disabled in drawing mode */ },
+                                            onClick = { },
                                             modifier = Modifier.offset {
                                                 IntOffset(xOffset.roundToPx(), yOffset.roundToPx())
                                             }
@@ -279,8 +365,8 @@ fun LineupScreen(
                         }
                     }
 
-                    // Drawing toolbar (when in drawing mode)
-                    if (state.drawingState.isDrawingMode) {
+                    // Drawing toolbar (when in drawing mode - normal mode)
+                    if (state.drawingState.isDrawingMode && !tacticState.isTacticMode) {
                         DrawingToolbar(
                             currentTool = state.drawingState.currentTool,
                             currentColor = state.drawingState.currentColor,
@@ -296,10 +382,28 @@ fun LineupScreen(
                             modifier = Modifier.align(Alignment.TopCenter)
                         )
                     }
+
+                    // Drawing toolbar (when in tactic mode and drawing)
+                    if (tacticState.isTacticMode && tacticState.isDrawingMode) {
+                        DrawingToolbar(
+                            currentTool = tacticState.currentTool,
+                            currentColor = tacticState.currentColor,
+                            currentStrokeWidth = tacticState.currentStrokeWidth,
+                            canUndo = tacticState.canUndo,
+                            canRedo = tacticState.canRedo,
+                            onToolSelected = { tool -> tacticViewModel.setDrawingTool(tool) },
+                            onColorSelected = { color -> tacticViewModel.setDrawingColor(color) },
+                            onStrokeWidthChanged = { width -> tacticViewModel.setStrokeWidth(width) },
+                            onUndo = { tacticViewModel.undoInCurrentFrame() },
+                            onRedo = { tacticViewModel.redoInCurrentFrame() },
+                            onClear = { tacticViewModel.clearDrawingsInCurrentFrame() },
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
                 }
 
-                // Bottom action bar (hidden in drawing mode)
-                if (!state.drawingState.isDrawingMode) {
+                // Bottom action bar (hidden in drawing mode and tactic mode)
+                if (!state.drawingState.isDrawingMode && !tacticState.isTacticMode) {
                     Column() {
                         Row(
                             modifier = Modifier
@@ -324,9 +428,38 @@ fun LineupScreen(
                                     stringResource(R.string.drawing_mode),
                                     fontWeight = FontWeight.Bold
                                 )
-
                             }
 
+                            Button(
+                                onClick = {
+                                    tacticViewModel.enterTacticMode(state.effectivePositions)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = SecondaryGold,
+                                    contentColor = GrassGreenDark
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = "Tactic Mode"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    "Tactic",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(GrassGreenDark.copy(alpha = 0.9f))
+                                .padding(4.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
                             Button(
                                 onClick = { viewModel.showCustomizationSheet() },
                                 colors = ButtonDefaults.buttonColors(
@@ -417,6 +550,67 @@ fun LineupScreen(
 
                     }
                 }
+
+                // Tactic Mode UI
+                if (tacticState.isTacticMode) {
+                    Column {
+                        // Drawing toggle button for tactic mode
+                        if (!tacticState.playbackState.isPlaying) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(GrassGreenDark.copy(alpha = 0.9f))
+                                    .padding(4.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Button(
+                                    onClick = { tacticViewModel.toggleDrawingMode() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (tacticState.isDrawingMode) SecondaryGold else Color.White.copy(alpha = 0.9f),
+                                        contentColor = GrassGreenDark
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = if (tacticState.isDrawingMode) Icons.Default.Check else Icons.Default.Create,
+                                        contentDescription = stringResource(R.string.drawing_mode)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        if (tacticState.isDrawingMode) "Done Drawing" else stringResource(R.string.drawing_mode),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+
+                        // Playback Controls
+                        PlaybackControls(
+                            playbackState = tacticState.playbackState,
+                            frameCount = tacticState.frames.size,
+                            onPlayPause = {
+                                if (tacticState.playbackState.isPlaying) {
+                                    tacticViewModel.stopPlayback()
+                                } else {
+                                    tacticViewModel.startPlayback()
+                                }
+                            },
+                            onStop = { tacticViewModel.stopPlayback() },
+                            onSpeedChange = { speed -> tacticViewModel.setPlaybackSpeed(speed) },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+
+                        // Timeline Bar
+                        TimelineBar(
+                            frames = tacticState.frames,
+                            currentFrameIndex = tacticState.currentFrameIndex,
+                            isPlaying = tacticState.playbackState.isPlaying,
+                            onFrameSelected = { index -> tacticViewModel.selectFrame(index) },
+                            onAddFrame = { tacticViewModel.addFrame() },
+                            onDuplicateFrame = { index -> tacticViewModel.duplicateFrame(index) },
+                            onDeleteFrame = { index -> tacticViewModel.deleteFrame(index) }
+                        )
+                    }
+                }
             } // End of Column
         } // End of else
 
@@ -473,6 +667,25 @@ fun LineupScreen(
                 Icon(imageVector = Icons.Default.Check, contentDescription = null)
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(stringResource(R.string.btn_apply), fontWeight = FontWeight.Bold)
+            }
+        }
+
+        // Exit button for tactic mode - positioned at top right of screen
+        if (tacticState.isTacticMode && !tacticState.playbackState.isPlaying) {
+            Button(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .systemBarsPadding()
+                    .padding(top = 8.dp, end = 6.dp),
+                onClick = { tacticViewModel.exitTacticMode() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red.copy(alpha = 0.9f),
+                    contentColor = Color.White
+                )
+            ) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Exit", fontWeight = FontWeight.Bold)
             }
         }
     } // End of outer Box

@@ -98,7 +98,7 @@
     <string name="tool_pen">Kalem</string>
     <string name="tool_arrow">Ok</string>
     <string name="tool_line">Çizgi</string>
-    <string name="tool_circle">Daire</string>
+    <string name="tool_dashed_line">Kesikli Çizgi</string>
     <string name="tool_eraser">Silgi</string>
     <string name="drawing_undo">Geri Al</string>
     <string name="drawing_redo">Yinele</string>

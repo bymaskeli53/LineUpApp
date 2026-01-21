@@ -99,7 +99,7 @@
     <string name="tool_pen">Pen</string>
     <string name="tool_arrow">Arrow</string>
     <string name="tool_line">Line</string>
-    <string name="tool_circle">Circle</string>
+    <string name="tool_dashed_line">Dashed Line</string>
     <string name="tool_eraser">Eraser</string>
     <string name="drawing_undo">Undo</string>
     <string name="drawing_redo">Redo</string>

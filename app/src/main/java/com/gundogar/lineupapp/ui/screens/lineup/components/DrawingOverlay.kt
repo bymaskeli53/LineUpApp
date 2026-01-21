@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -77,7 +78,7 @@ fun DrawingOverlay(
                                 DrawingTool.PEN -> {
                                     currentPoints = currentPoints + percentOffset
                                 }
-                                DrawingTool.ARROW, DrawingTool.LINE, DrawingTool.CIRCLE -> {
+                                DrawingTool.ARROW, DrawingTool.LINE, DrawingTool.DASHED_LINE -> {
                                     // For shapes, we only need start and end
                                     startPoint?.let { start ->
                                         currentPoints = listOf(start, percentOffset)
@@ -141,7 +142,7 @@ private fun DrawScope.drawStroke(stroke: DrawingStroke, canvasWidth: Float, canv
         DrawingTool.PEN -> drawPenStroke(actualPoints, stroke.color, stroke.strokeWidth)
         DrawingTool.ARROW -> drawArrowStroke(actualPoints, stroke.color, stroke.strokeWidth)
         DrawingTool.LINE -> drawLineStroke(actualPoints, stroke.color, stroke.strokeWidth)
-        DrawingTool.CIRCLE -> drawCircleStroke(actualPoints, stroke.color, stroke.strokeWidth)
+        DrawingTool.DASHED_LINE -> drawDashedLineStroke(actualPoints, stroke.color, stroke.strokeWidth)
         DrawingTool.ERASER -> { /* Eraser doesn't draw */ }
     }
 }
@@ -228,23 +229,21 @@ private fun DrawScope.drawArrowStroke(points: List<Offset>, color: Color, stroke
     )
 }
 
-private fun DrawScope.drawCircleStroke(points: List<Offset>, color: Color, strokeWidth: Float) {
+private fun DrawScope.drawDashedLineStroke(points: List<Offset>, color: Color, strokeWidth: Float) {
     if (points.size < 2) return
 
     val start = points.first()
     val end = points.last()
 
-    // Calculate center and radius
-    val centerX = (start.x + end.x) / 2
-    val centerY = (start.y + end.y) / 2
-    val radiusX = kotlin.math.abs(end.x - start.x) / 2
-    val radiusY = kotlin.math.abs(end.y - start.y) / 2
+    val pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 10f), 0f)
 
-    drawOval(
+    drawLine(
         color = color,
-        topLeft = Offset(centerX - radiusX, centerY - radiusY),
-        size = androidx.compose.ui.geometry.Size(radiusX * 2, radiusY * 2),
-        style = Stroke(width = strokeWidth)
+        start = start,
+        end = end,
+        strokeWidth = strokeWidth,
+        cap = StrokeCap.Round,
+        pathEffect = pathEffect
     )
 }
 

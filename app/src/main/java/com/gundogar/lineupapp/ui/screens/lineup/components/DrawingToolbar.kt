@@ -18,12 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -93,24 +94,24 @@ fun DrawingToolbar(
                 )
 
                 ToolButton(
-                    icon = Icons.Default.KeyboardArrowRight,
+                    icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = stringResource(R.string.tool_arrow),
                     isSelected = currentTool == DrawingTool.ARROW,
                     onClick = { onToolSelected(DrawingTool.ARROW) }
                 )
 
                 ToolButton(
-                    icon = Icons.Default.Create,
+                    icon = Icons.Default.Remove,
                     contentDescription = stringResource(R.string.tool_line),
                     isSelected = currentTool == DrawingTool.LINE,
                     onClick = { onToolSelected(DrawingTool.LINE) }
                 )
 
                 ToolButton(
-                    icon = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.tool_circle),
-                    isSelected = currentTool == DrawingTool.CIRCLE,
-                    onClick = { onToolSelected(DrawingTool.CIRCLE) }
+                    icon = Icons.Default.MoreHoriz,
+                    contentDescription = stringResource(R.string.tool_dashed_line),
+                    isSelected = currentTool == DrawingTool.DASHED_LINE,
+                    onClick = { onToolSelected(DrawingTool.DASHED_LINE) }
                 )
 
                 ToolButton(

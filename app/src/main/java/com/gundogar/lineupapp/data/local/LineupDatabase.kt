@@ -10,12 +10,14 @@ import com.gundogar.lineupapp.data.local.dao.FootballPitchDao
 import com.gundogar.lineupapp.data.local.dao.GoalDao
 import com.gundogar.lineupapp.data.local.dao.MatchDao
 import com.gundogar.lineupapp.data.local.dao.SavedLineupDao
+import com.gundogar.lineupapp.data.local.dao.TacticDao
 import com.gundogar.lineupapp.data.local.dao.TournamentDao
 import com.gundogar.lineupapp.data.local.dao.TournamentTeamDao
 import com.gundogar.lineupapp.data.local.entity.FootballPitchEntity
 import com.gundogar.lineupapp.data.local.entity.GoalEntity
 import com.gundogar.lineupapp.data.local.entity.MatchEntity
 import com.gundogar.lineupapp.data.local.entity.SavedLineupEntity
+import com.gundogar.lineupapp.data.local.entity.TacticEntity
 import com.gundogar.lineupapp.data.local.entity.TournamentEntity
 import com.gundogar.lineupapp.data.local.entity.TournamentTeamEntity
 
@@ -26,9 +28,10 @@ import com.gundogar.lineupapp.data.local.entity.TournamentTeamEntity
         TournamentEntity::class,
         TournamentTeamEntity::class,
         MatchEntity::class,
-        GoalEntity::class
+        GoalEntity::class,
+        TacticEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class LineupDatabase : RoomDatabase() {
@@ -39,6 +42,7 @@ abstract class LineupDatabase : RoomDatabase() {
     abstract fun tournamentTeamDao(): TournamentTeamDao
     abstract fun matchDao(): MatchDao
     abstract fun goalDao(): GoalDao
+    abstract fun tacticDao(): TacticDao
 
     companion object {
         @Volatile
@@ -159,6 +163,23 @@ abstract class LineupDatabase : RoomDatabase() {
             }
         }
 
+        // Migration from version 5 to 6: Add tactics table
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS tactics (
+                        id TEXT PRIMARY KEY NOT NULL,
+                        name TEXT NOT NULL,
+                        framesJson TEXT NOT NULL,
+                        createdAt INTEGER NOT NULL,
+                        updatedAt INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         fun getDatabase(context: Context): LineupDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -166,7 +187,7 @@ abstract class LineupDatabase : RoomDatabase() {
                     LineupDatabase::class.java,
                     "lineup_database"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
