@@ -1,0 +1,37 @@
+<en-US>
+🎬 NEW: Animated Tactics Mode
+Create dynamic tactical plays with frame-by-frame animation! Move players, add ball movements, and illustrate your game plan in motion.
+
+✨ Key Features:
+• Timeline editor with frame management
+• Smooth player and ball movement animations
+• Playback controls with speed adjustment (0.5x, 1x, 2x)
+• Pause and resume animations at any point
+• Draw tactics in preview mode before creating frames
+• Duplicate and delete frames easily
+
+🐛 Bug Fixes:
+• Fixed animation playback stopping correctly at the last frame
+• Improved scrolling in team customization sheet
+
+Perfect for coaches who want to bring their tactical ideas to life!
+</en-US>
+
+<tr-TR>
+🎬 YENİ: Animasyonlu Taktik Modu
+Kare kare animasyonla dinamik taktik oyunları oluşturun! Oyuncuları hareket ettirin, top hareketleri ekleyin ve oyun planınızı harekete geçirin.
+
+✨ Öne Çıkan Özellikler:
+• Kare yönetimi ile zaman çizelgesi düzenleyici
+• Akıcı oyuncu ve top hareket animasyonları
+• Hız ayarlı oynatma kontrolleri (0.5x, 1x, 2x)
+• Animasyonları istediğiniz noktada duraklatma ve devam ettirme
+• Kare oluşturmadan önce önizleme modunda taktik çizimi
+• Kareleri kolayca çoğaltma ve silme
+
+🐛 Hata Düzeltmeleri:
+• Animasyon oynatmanın son karede doğru durması düzeltildi
+• Takım özelleştirme sayfasında kaydırma iyileştirildi
+
+Taktik fikirlerini hayata geçirmek isteyen antrenörler için mükemmel!
+</tr-TR>
