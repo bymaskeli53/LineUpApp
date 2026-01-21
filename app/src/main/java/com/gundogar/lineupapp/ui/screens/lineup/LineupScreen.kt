@@ -589,8 +589,12 @@ fun LineupScreen(
                             frameCount = tacticState.frames.size,
                             onPlayPause = {
                                 if (tacticState.playbackState.isPlaying) {
-                                    tacticViewModel.stopPlayback()
+                                    tacticViewModel.pausePlayback()
+                                } else if (tacticState.playbackState.progress > 0f || tacticState.playbackState.currentFrameIndex > 0) {
+                                    // Resume from paused position
+                                    tacticViewModel.resumePlayback()
                                 } else {
+                                    // Start from beginning
                                     tacticViewModel.startPlayback()
                                 }
                             },

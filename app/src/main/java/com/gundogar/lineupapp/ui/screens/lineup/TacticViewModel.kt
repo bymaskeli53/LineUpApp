@@ -491,7 +491,9 @@ class TacticViewModel @Inject constructor(
     fun startPlayback() {
         if (_state.value.frames.size < 2) return
 
-        stopPlayback()
+        // Cancel any existing playback
+        playbackJob?.cancel()
+        playbackJob = null
 
         _state.update {
             it.copy(
@@ -499,6 +501,39 @@ class TacticViewModel @Inject constructor(
                     isPlaying = true,
                     currentFrameIndex = 0,
                     progress = 0f
+                ),
+                isDrawingMode = false
+            )
+        }
+
+        playbackJob = viewModelScope.launch {
+            animatePlayback()
+        }
+    }
+
+    fun pausePlayback() {
+        playbackJob?.cancel()
+        playbackJob = null
+
+        // Keep current position, just stop playing
+        _state.update {
+            it.copy(
+                playbackState = it.playbackState.copy(
+                    isPlaying = false
+                    // Don't reset progress or currentFrameIndex
+                )
+            )
+        }
+    }
+
+    fun resumePlayback() {
+        if (_state.value.frames.size < 2) return
+        if (_state.value.playbackState.isPlaying) return
+
+        _state.update {
+            it.copy(
+                playbackState = it.playbackState.copy(
+                    isPlaying = true
                 ),
                 isDrawingMode = false
             )
@@ -517,6 +552,7 @@ class TacticViewModel @Inject constructor(
             it.copy(
                 playbackState = it.playbackState.copy(
                     isPlaying = false,
+                    currentFrameIndex = 0,
                     progress = 0f
                 ),
                 interpolatedPositions = null,
