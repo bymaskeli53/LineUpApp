@@ -35,6 +35,7 @@ data class TacticState(
     val isPreviewMode: Boolean = true,
     val previewPlayerPositions: Map<Int, FramePosition> = emptyMap(),
     val previewBallPosition: BallPosition = BallPosition(0.5f, 0.5f, true),
+    val previewStrokes: List<DrawingStroke> = emptyList(),
     val playbackState: PlaybackState = PlaybackState(),
     val interpolatedPositions: Map<Int, FramePosition>? = null,
     val interpolatedBallPosition: BallPosition? = null,
@@ -57,10 +58,13 @@ data class TacticState(
         get() = interpolatedBallPosition ?: if (isPreviewMode) previewBallPosition else currentFrame?.ballPosition
 
     val effectiveStrokes: List<DrawingStroke>
-        get() = interpolatedStrokes ?: currentFrame?.strokes ?: emptyList()
+        get() = interpolatedStrokes
+            ?: if (playbackState.isPlaying) frames.getOrNull(playbackState.currentFrameIndex)?.strokes ?: emptyList()
+            else if (isPreviewMode) previewStrokes
+            else currentFrame?.strokes ?: emptyList()
 
     val canUndo: Boolean
-        get() = currentFrame?.strokes?.isNotEmpty() == true
+        get() = if (isPreviewMode) previewStrokes.isNotEmpty() else currentFrame?.strokes?.isNotEmpty() == true
 
     val canRedo: Boolean
         get() = undoStack.isNotEmpty()
@@ -127,17 +131,18 @@ class TacticViewModel @Inject constructor(
                 index = currentState.frames.size,
                 playerPositions = currentState.previewPlayerPositions.toMap(),
                 ballPosition = currentState.previewBallPosition.copy(),
-                strokes = emptyList(),
+                strokes = currentState.previewStrokes.toList(),
                 duration = 1000L
             )
 
             val updatedFrames = currentState.frames + newFrame
 
             // Stay in preview mode, ready to set up next frame position
-            // Preview state keeps current position so user can continue from there
+            // Clear preview strokes for the next frame
             currentState.copy(
                 frames = updatedFrames,
                 isPreviewMode = true,
+                previewStrokes = emptyList(),
                 interpolatedPositions = null,
                 interpolatedBallPosition = null,
                 interpolatedStrokes = null
@@ -330,55 +335,97 @@ class TacticViewModel @Inject constructor(
 
     fun addStrokeToCurrentFrame(stroke: DrawingStroke) {
         _state.update { currentState ->
-            val currentFrame = currentState.currentFrame ?: return@update currentState
-            val updatedStrokes = currentFrame.strokes + stroke
+            if (currentState.isPreviewMode) {
+                // Add stroke to preview strokes
+                currentState.copy(
+                    previewStrokes = currentState.previewStrokes + stroke,
+                    undoStack = emptyList()
+                )
+            } else {
+                // Add stroke to current frame
+                val currentFrame = currentState.frames.getOrNull(currentState.currentFrameIndex)
+                    ?: return@update currentState
+                val updatedStrokes = currentFrame.strokes + stroke
 
-            val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
-            val updatedFrames = currentState.frames.toMutableList()
-            updatedFrames[currentState.currentFrameIndex] = updatedFrame
+                val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
+                val updatedFrames = currentState.frames.toMutableList()
+                updatedFrames[currentState.currentFrameIndex] = updatedFrame
 
-            currentState.copy(frames = updatedFrames, undoStack = emptyList())
+                currentState.copy(frames = updatedFrames, undoStack = emptyList())
+            }
         }
     }
 
     fun eraseStrokeFromCurrentFrame(strokeId: String) {
         _state.update { currentState ->
-            val currentFrame = currentState.currentFrame ?: return@update currentState
-            val strokeToRemove = currentFrame.strokes.find { it.id == strokeId }
-            val updatedStrokes = currentFrame.strokes.filter { it.id != strokeId }
+            if (currentState.isPreviewMode) {
+                // Erase from preview strokes
+                val strokeToRemove = currentState.previewStrokes.find { it.id == strokeId }
+                val updatedStrokes = currentState.previewStrokes.filter { it.id != strokeId }
+                currentState.copy(
+                    previewStrokes = updatedStrokes,
+                    undoStack = if (strokeToRemove != null) {
+                        currentState.undoStack + strokeToRemove
+                    } else {
+                        currentState.undoStack
+                    }
+                )
+            } else {
+                // Erase from current frame
+                val currentFrame = currentState.frames.getOrNull(currentState.currentFrameIndex)
+                    ?: return@update currentState
+                val strokeToRemove = currentFrame.strokes.find { it.id == strokeId }
+                val updatedStrokes = currentFrame.strokes.filter { it.id != strokeId }
 
-            val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
-            val updatedFrames = currentState.frames.toMutableList()
-            updatedFrames[currentState.currentFrameIndex] = updatedFrame
+                val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
+                val updatedFrames = currentState.frames.toMutableList()
+                updatedFrames[currentState.currentFrameIndex] = updatedFrame
 
-            currentState.copy(
-                frames = updatedFrames,
-                undoStack = if (strokeToRemove != null) {
-                    currentState.undoStack + strokeToRemove
-                } else {
-                    currentState.undoStack
-                }
-            )
+                currentState.copy(
+                    frames = updatedFrames,
+                    undoStack = if (strokeToRemove != null) {
+                        currentState.undoStack + strokeToRemove
+                    } else {
+                        currentState.undoStack
+                    }
+                )
+            }
         }
     }
 
     fun undoInCurrentFrame() {
         _state.update { currentState ->
-            val currentFrame = currentState.currentFrame ?: return@update currentState
-            val strokes = currentFrame.strokes
-            if (strokes.isEmpty()) return@update currentState
+            if (currentState.isPreviewMode) {
+                // Undo in preview strokes
+                val strokes = currentState.previewStrokes
+                if (strokes.isEmpty()) return@update currentState
 
-            val lastStroke = strokes.last()
-            val updatedStrokes = strokes.dropLast(1)
+                val lastStroke = strokes.last()
+                val updatedStrokes = strokes.dropLast(1)
 
-            val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
-            val updatedFrames = currentState.frames.toMutableList()
-            updatedFrames[currentState.currentFrameIndex] = updatedFrame
+                currentState.copy(
+                    previewStrokes = updatedStrokes,
+                    undoStack = currentState.undoStack + lastStroke
+                )
+            } else {
+                // Undo in current frame
+                val currentFrame = currentState.frames.getOrNull(currentState.currentFrameIndex)
+                    ?: return@update currentState
+                val strokes = currentFrame.strokes
+                if (strokes.isEmpty()) return@update currentState
 
-            currentState.copy(
-                frames = updatedFrames,
-                undoStack = currentState.undoStack + lastStroke
-            )
+                val lastStroke = strokes.last()
+                val updatedStrokes = strokes.dropLast(1)
+
+                val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
+                val updatedFrames = currentState.frames.toMutableList()
+                updatedFrames[currentState.currentFrameIndex] = updatedFrame
+
+                currentState.copy(
+                    frames = updatedFrames,
+                    undoStack = currentState.undoStack + lastStroke
+                )
+            }
         }
     }
 
@@ -387,34 +434,55 @@ class TacticViewModel @Inject constructor(
             val undoStack = currentState.undoStack
             if (undoStack.isEmpty()) return@update currentState
 
-            val currentFrame = currentState.currentFrame ?: return@update currentState
-            val strokeToRestore = undoStack.last()
-            val updatedStrokes = currentFrame.strokes + strokeToRestore
+            if (currentState.isPreviewMode) {
+                // Redo in preview strokes
+                val strokeToRestore = undoStack.last()
+                currentState.copy(
+                    previewStrokes = currentState.previewStrokes + strokeToRestore,
+                    undoStack = undoStack.dropLast(1)
+                )
+            } else {
+                // Redo in current frame
+                val currentFrame = currentState.frames.getOrNull(currentState.currentFrameIndex)
+                    ?: return@update currentState
+                val strokeToRestore = undoStack.last()
+                val updatedStrokes = currentFrame.strokes + strokeToRestore
 
-            val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
-            val updatedFrames = currentState.frames.toMutableList()
-            updatedFrames[currentState.currentFrameIndex] = updatedFrame
+                val updatedFrame = currentFrame.copy(strokes = updatedStrokes)
+                val updatedFrames = currentState.frames.toMutableList()
+                updatedFrames[currentState.currentFrameIndex] = updatedFrame
 
-            currentState.copy(
-                frames = updatedFrames,
-                undoStack = undoStack.dropLast(1)
-            )
+                currentState.copy(
+                    frames = updatedFrames,
+                    undoStack = undoStack.dropLast(1)
+                )
+            }
         }
     }
 
     fun clearDrawingsInCurrentFrame() {
         _state.update { currentState ->
-            val currentFrame = currentState.currentFrame ?: return@update currentState
-            val previousStrokes = currentFrame.strokes
+            if (currentState.isPreviewMode) {
+                // Clear preview strokes
+                currentState.copy(
+                    previewStrokes = emptyList(),
+                    undoStack = currentState.previewStrokes
+                )
+            } else {
+                // Clear current frame strokes
+                val currentFrame = currentState.frames.getOrNull(currentState.currentFrameIndex)
+                    ?: return@update currentState
+                val previousStrokes = currentFrame.strokes
 
-            val updatedFrame = currentFrame.copy(strokes = emptyList())
-            val updatedFrames = currentState.frames.toMutableList()
-            updatedFrames[currentState.currentFrameIndex] = updatedFrame
+                val updatedFrame = currentFrame.copy(strokes = emptyList())
+                val updatedFrames = currentState.frames.toMutableList()
+                updatedFrames[currentState.currentFrameIndex] = updatedFrame
 
-            currentState.copy(
-                frames = updatedFrames,
-                undoStack = previousStrokes
-            )
+                currentState.copy(
+                    frames = updatedFrames,
+                    undoStack = previousStrokes
+                )
+            }
         }
     }
 
