@@ -1,37 +1,25 @@
 <en-US>
-🎬 NEW: Animated Tactics Mode
-Create dynamic tactical plays with frame-by-frame animation! Move players, add ball movements, and illustrate your game plan in motion.
+⏯️ NEW: Pause and Resume Tactic Animations
+Take full control of your animated tactics! Pause the playback at any moment to analyze specific movements, then resume exactly where you left off.
 
-✨ Key Features:
-• Timeline editor with frame management
-• Smooth player and ball movement animations
-• Playback controls with speed adjustment (0.5x, 1x, 2x)
-• Pause and resume animations at any point
-• Draw tactics in preview mode before creating frames
-• Duplicate and delete frames easily
+✨ What's New:
+• Pause button to stop animation without losing progress
+• Resume playback from the exact frame where you paused
+• Improved playback controls for better user experience
+• Stop button now properly resets animation to the beginning
 
-🐛 Bug Fixes:
-• Fixed animation playback stopping correctly at the last frame
-• Improved scrolling in team customization sheet
-
-Perfect for coaches who want to bring their tactical ideas to life!
+Perfect for coaches who need to review tactical movements step by step and explain complex plays to their team!
 </en-US>
 
 <tr-TR>
-🎬 YENİ: Animasyonlu Taktik Modu
-Kare kare animasyonla dinamik taktik oyunları oluşturun! Oyuncuları hareket ettirin, top hareketleri ekleyin ve oyun planınızı harekete geçirin.
+⏯️ YENİ: Taktik Animasyonlarını Duraklatma ve Devam Ettirme
+Animasyonlu taktikleriniz üzerinde tam kontrol! Belirli hareketleri analiz etmek için oynatmayı istediğiniz anda durdurun, ardından kaldığınız yerden devam edin.
 
-✨ Öne Çıkan Özellikler:
-• Kare yönetimi ile zaman çizelgesi düzenleyici
-• Akıcı oyuncu ve top hareket animasyonları
-• Hız ayarlı oynatma kontrolleri (0.5x, 1x, 2x)
-• Animasyonları istediğiniz noktada duraklatma ve devam ettirme
-• Kare oluşturmadan önce önizleme modunda taktik çizimi
-• Kareleri kolayca çoğaltma ve silme
+✨ Yenilikler:
+• İlerlemeyi kaybetmeden animasyonu durduran duraklat butonu
+• Duraklattığınız tam kareden oynatmaya devam etme
+• Daha iyi kullanıcı deneyimi için geliştirilmiş oynatma kontrolleri
+• Durdur butonu artık animasyonu başa düzgün şekilde sıfırlıyor
 
-🐛 Hata Düzeltmeleri:
-• Animasyon oynatmanın son karede doğru durması düzeltildi
-• Takım özelleştirme sayfasında kaydırma iyileştirildi
-
-Taktik fikirlerini hayata geçirmek isteyen antrenörler için mükemmel!
+Taktik hareketleri adım adım incelemek ve karmaşık oyunları takımına açıklamak isteyen antrenörler için mükemmel!
 </tr-TR>
