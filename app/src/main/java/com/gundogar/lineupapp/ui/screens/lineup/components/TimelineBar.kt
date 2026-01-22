@@ -44,11 +44,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.BallPosition
 import com.gundogar.lineupapp.data.model.FramePosition
 import com.gundogar.lineupapp.data.model.TacticFrame
@@ -124,7 +126,7 @@ fun TimelineBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Frame",
+                    contentDescription = stringResource(R.string.tactic_add_frame),
                     tint = Color.Black
                 )
             }
@@ -194,7 +196,7 @@ private fun FrameThumbnail(
             onDismissRequest = { showMenu = false }
         ) {
             DropdownMenuItem(
-                text = { Text("Duplicate") },
+                text = { Text(stringResource(R.string.tactic_duplicate)) },
                 onClick = {
                     showMenu = false
                     onDuplicate()
@@ -205,7 +207,7 @@ private fun FrameThumbnail(
             )
             if (onDelete != null) {
                 DropdownMenuItem(
-                    text = { Text("Delete", color = Color.Red) },
+                    text = { Text(stringResource(R.string.btn_delete), color = Color.Red) },
                     onClick = {
                         showMenu = false
                         onDelete()

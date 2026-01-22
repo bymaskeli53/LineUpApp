@@ -36,10 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gundogar.lineupapp.R
 import com.gundogar.lineupapp.data.model.PlaybackSpeed
 import com.gundogar.lineupapp.data.model.PlaybackState
 import com.gundogar.lineupapp.ui.theme.LineUpAppTheme
@@ -81,7 +84,7 @@ fun PlaybackControls(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Frame ${playbackState.currentFrameIndex + 1}/$frameCount",
+                        text = stringResource(R.string.tactic_frame_counter, playbackState.currentFrameIndex + 1, frameCount),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -119,7 +122,7 @@ fun PlaybackControls(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Stop,
-                        contentDescription = "Stop",
+                        contentDescription = stringResource(R.string.tactic_playback_stop),
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -141,7 +144,7 @@ fun PlaybackControls(
                         } else {
                             Icons.Default.PlayArrow
                         },
-                        contentDescription = if (playbackState.isPlaying) "Pause" else "Play",
+                        contentDescription = stringResource(if (playbackState.isPlaying) R.string.tactic_playback_pause else R.string.tactic_playback_play),
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -197,7 +200,7 @@ fun PlaybackControls(
             // Frame count info when not playing
             if (!playbackState.isPlaying && frameCount > 1) {
                 Text(
-                    text = "$frameCount frames",
+                    text = stringResource(R.string.tactic_frames_count, frameCount),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                     modifier = Modifier.padding(top = 8.dp)
@@ -208,7 +211,7 @@ fun PlaybackControls(
             when {
                 frameCount == 0 -> {
                     Text(
-                        text = "Move ball to start position, tap + to add Frame 1",
+                        text = stringResource(R.string.tactic_hint_add_first_frame),
                         fontSize = 12.sp,
                         color = SecondaryGold,
                         fontWeight = FontWeight.Medium,
@@ -217,7 +220,7 @@ fun PlaybackControls(
                 }
                 frameCount == 1 -> {
                     Text(
-                        text = "Move ball to next position, tap + to add Frame 2",
+                        text = stringResource(R.string.tactic_hint_add_next_frame),
                         fontSize = 12.sp,
                         color = SecondaryGold,
                         fontWeight = FontWeight.Medium,

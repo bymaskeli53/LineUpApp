@@ -441,11 +441,11 @@ fun LineupScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Tactic Mode"
+                                    contentDescription = stringResource(R.string.tactic_mode_description)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    "Tactic",
+                                    stringResource(R.string.tactic_mode),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -576,7 +576,7 @@ fun LineupScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        if (tacticState.isDrawingMode) "Done Drawing" else stringResource(R.string.drawing_mode),
+                                        stringResource(if (tacticState.isDrawingMode) R.string.tactic_done_drawing else R.string.drawing_mode),
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
@@ -689,7 +689,7 @@ fun LineupScreen(
             ) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Exit", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.tactic_exit), fontWeight = FontWeight.Bold)
             }
         }
     } // End of outer Box

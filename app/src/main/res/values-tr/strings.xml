@@ -229,6 +229,22 @@
     <string name="tournament_players_count">%d oyuncu</string>
     <string name="tournament_round_fallback">Tur</string>
 
+    <!-- Tactic Mode -->
+    <string name="tactic_mode">Taktik</string>
+    <string name="tactic_mode_description">Taktik Modu</string>
+    <string name="tactic_new">Yeni Taktik</string>
+    <string name="tactic_exit">Çıkış</string>
+    <string name="tactic_done_drawing">Çizimi Bitir</string>
+    <string name="tactic_add_frame">Kare Ekle</string>
+    <string name="tactic_duplicate">Çoğalt</string>
+    <string name="tactic_frame_counter">Kare %1$d/%2$d</string>
+    <string name="tactic_frames_count">%d kare</string>
+    <string name="tactic_hint_add_first_frame">Topu başlangıç konumuna getirin, 1.kareyi eklemek için + düğmesine basın</string>
+    <string name="tactic_hint_add_next_frame">Topu sonraki konuma getirin, 2.kareyi eklemek için + düğmesine basın</string>
+    <string name="tactic_playback_stop">Durdur</string>
+    <string name="tactic_playback_pause">Duraklat</string>
+    <string name="tactic_playback_play">Oynat</string>
+
     <!-- Common -->
     <string name="loading">Yükleniyor…</string>
     <string name="btn_go_back">Geri Dön</string>

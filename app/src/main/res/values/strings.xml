@@ -201,6 +201,22 @@
     <string name="loading">Loading…</string>
     <string name="btn_go_back">Go Back</string>
 
+    <!-- Tactic Mode -->
+    <string name="tactic_mode">Tactic</string>
+    <string name="tactic_mode_description">Tactic Mode</string>
+    <string name="tactic_new">New Tactic</string>
+    <string name="tactic_exit">Exit</string>
+    <string name="tactic_done_drawing">Done Drawing</string>
+    <string name="tactic_add_frame">Add Frame</string>
+    <string name="tactic_duplicate">Duplicate</string>
+    <string name="tactic_frame_counter">Frame %1$d/%2$d</string>
+    <string name="tactic_frames_count">%d frames</string>
+    <string name="tactic_hint_add_first_frame">Move ball to start position, tap + to add Frame 1</string>
+    <string name="tactic_hint_add_next_frame">Move ball to next position, tap + to add Frame 2</string>
+    <string name="tactic_playback_stop">Stop</string>
+    <string name="tactic_playback_pause">Pause</string>
+    <string name="tactic_playback_play">Play</string>
+
     <!-- Nearby Pitches -->
     <string name="screen_title_nearby_pitches">Nearby Pitches</string>
     <string name="tab_list">List</string>
